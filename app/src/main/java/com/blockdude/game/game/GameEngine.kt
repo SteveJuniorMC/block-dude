@@ -1,0 +1,261 @@
+package com.blockdude.game.game
+
+import com.blockdude.game.data.GameState
+import com.blockdude.game.data.Level
+import com.blockdude.game.data.Position
+
+class GameEngine(private val level: Level) {
+
+    fun createInitialState(): GameState {
+        return GameState(
+            playerPosition = level.playerStart,
+            playerFacing = Direction.RIGHT,
+            holdingBlock = false,
+            blocks = level.initialBlocks.toMutableSet(),
+            levelCompleted = false,
+            moves = 0
+        )
+    }
+
+    fun moveLeft(state: GameState): GameState {
+        if (state.levelCompleted) return state
+        val newState = state.copy(playerFacing = Direction.LEFT, moves = state.moves + 1)
+        return tryMove(newState, -1)
+    }
+
+    fun moveRight(state: GameState): GameState {
+        if (state.levelCompleted) return state
+        val newState = state.copy(playerFacing = Direction.RIGHT, moves = state.moves + 1)
+        return tryMove(newState, 1)
+    }
+
+    private fun tryMove(state: GameState, dx: Int): GameState {
+        val currentPos = state.playerPosition
+        val targetPos = Position(currentPos.x + dx, currentPos.y)
+        val aboveTarget = Position(targetPos.x, targetPos.y - 1)
+
+        // Check if target is blocked by wall
+        if (isWall(targetPos)) {
+            // Try to climb
+            val climbPos = Position(currentPos.x + dx, currentPos.y - 1)
+            val aboveClimb = Position(climbPos.x, climbPos.y - 1)
+            val aboveCurrent = Position(currentPos.x, currentPos.y - 1)
+
+            // Can climb if: there's a wall/block at target level, climb position is free,
+            // nothing above current position (or holding block accounts for it), nothing above climb position
+            if ((isWall(targetPos) || isBlock(targetPos, state.blocks)) &&
+                !isWall(climbPos) && !isBlock(climbPos, state.blocks) &&
+                !isWall(aboveClimb) && !isBlock(aboveClimb, state.blocks) &&
+                (!state.holdingBlock || (!isWall(aboveCurrent) && !isBlock(aboveCurrent, state.blocks)))
+            ) {
+                val movedState = state.copy(playerPosition = climbPos)
+                return applyGravity(movedState).let { checkWin(it) }
+            }
+            return state.copy(moves = state.moves - 1) // Undo move increment if can't move
+        }
+
+        // Check if target has a block
+        if (isBlock(targetPos, state.blocks)) {
+            // Try to push block
+            val pushTargetPos = Position(targetPos.x + dx, targetPos.y)
+
+            // Can push if: push target is empty and there's ground beneath it
+            if (!isWall(pushTargetPos) && !isBlock(pushTargetPos, state.blocks)) {
+                // Check if we need to climb to push or can push at same level
+                val belowTarget = Position(targetPos.x, targetPos.y + 1)
+                if (isWall(belowTarget) || isBlock(belowTarget, state.blocks)) {
+                    // Block is on ground at same level - push it
+                    val newBlocks = state.blocks.toMutableSet()
+                    newBlocks.remove(targetPos)
+                    newBlocks.add(pushTargetPos)
+                    val pushedState = state.copy(blocks = newBlocks)
+                    val afterBlockGravity = applyBlockGravity(pushedState, pushTargetPos)
+                    // Now move player forward
+                    val movedState = afterBlockGravity.copy(playerPosition = targetPos)
+                    return applyGravity(movedState).let { checkWin(it) }
+                }
+            }
+
+            // Try to climb over block
+            val climbPos = Position(currentPos.x + dx, currentPos.y - 1)
+            val aboveClimb = Position(climbPos.x, climbPos.y - 1)
+            val aboveCurrent = Position(currentPos.x, currentPos.y - 1)
+
+            if (!isWall(climbPos) && !isBlock(climbPos, state.blocks) &&
+                !isWall(aboveClimb) && !isBlock(aboveClimb, state.blocks) &&
+                (!state.holdingBlock || (!isWall(aboveCurrent) && !isBlock(aboveCurrent, state.blocks)))
+            ) {
+                val movedState = state.copy(playerPosition = climbPos)
+                return applyGravity(movedState).let { checkWin(it) }
+            }
+            return state.copy(moves = state.moves - 1)
+        }
+
+        // Check if there's ground at target or we'll fall
+        val movedState = state.copy(playerPosition = targetPos)
+        return applyGravity(movedState).let { checkWin(it) }
+    }
+
+    fun pickUpOrPlace(state: GameState): GameState {
+        if (state.levelCompleted) return state
+
+        return if (state.holdingBlock) {
+            placeBlock(state)
+        } else {
+            pickUpBlock(state)
+        }
+    }
+
+    private fun pickUpBlock(state: GameState): GameState {
+        val dx = if (state.playerFacing == Direction.LEFT) -1 else 1
+        val frontPos = Position(state.playerPosition.x + dx, state.playerPosition.y)
+        val aboveFront = Position(frontPos.x, frontPos.y - 1)
+        val abovePlayer = Position(state.playerPosition.x, state.playerPosition.y - 1)
+
+        // Can pick up if: block is in front, nothing above it, nothing above player
+        if (isBlock(frontPos, state.blocks) &&
+            !isBlock(aboveFront, state.blocks) && !isWall(aboveFront) &&
+            !isBlock(abovePlayer, state.blocks) && !isWall(abovePlayer)
+        ) {
+            val newBlocks = state.blocks.toMutableSet()
+            newBlocks.remove(frontPos)
+            return state.copy(
+                holdingBlock = true,
+                blocks = newBlocks,
+                moves = state.moves + 1
+            )
+        }
+
+        // Try to pick up block below in front (if standing on edge)
+        val belowFront = Position(frontPos.x, frontPos.y + 1)
+        if (isBlock(belowFront, state.blocks) &&
+            !isBlock(frontPos, state.blocks) && !isWall(frontPos) &&
+            !isBlock(abovePlayer, state.blocks) && !isWall(abovePlayer)
+        ) {
+            val aboveBelowFront = frontPos
+            if (!isBlock(aboveBelowFront, state.blocks) && !isWall(aboveBelowFront)) {
+                val newBlocks = state.blocks.toMutableSet()
+                newBlocks.remove(belowFront)
+                return state.copy(
+                    holdingBlock = true,
+                    blocks = newBlocks,
+                    moves = state.moves + 1
+                )
+            }
+        }
+
+        return state
+    }
+
+    private fun placeBlock(state: GameState): GameState {
+        val dx = if (state.playerFacing == Direction.LEFT) -1 else 1
+        val frontPos = Position(state.playerPosition.x + dx, state.playerPosition.y)
+
+        // Find where the block would land
+        var placePos = frontPos
+
+        // If front position is blocked, try above player
+        if (isWall(frontPos) || isBlock(frontPos, state.blocks)) {
+            val abovePlayer = Position(state.playerPosition.x, state.playerPosition.y - 1)
+            val aboveAbove = Position(state.playerPosition.x, state.playerPosition.y - 2)
+            if (!isWall(abovePlayer) && !isBlock(abovePlayer, state.blocks) &&
+                !isWall(aboveAbove) && !isBlock(aboveAbove, state.blocks)
+            ) {
+                // Can't really place on head in classic block dude, but let's try front-above
+                val frontAbove = Position(frontPos.x, frontPos.y - 1)
+                if (!isWall(frontAbove) && !isBlock(frontAbove, state.blocks)) {
+                    placePos = frontAbove
+                } else {
+                    return state
+                }
+            } else {
+                return state
+            }
+        }
+
+        // Apply gravity to placed block
+        var finalPos = placePos
+        while (true) {
+            val below = Position(finalPos.x, finalPos.y + 1)
+            if (isWall(below) || isBlock(below, state.blocks) || finalPos.y >= level.height - 1) {
+                break
+            }
+            finalPos = below
+        }
+
+        val newBlocks = state.blocks.toMutableSet()
+        newBlocks.add(finalPos)
+        return state.copy(
+            holdingBlock = false,
+            blocks = newBlocks,
+            moves = state.moves + 1
+        )
+    }
+
+    private fun applyGravity(state: GameState): GameState {
+        var currentPos = state.playerPosition
+
+        while (true) {
+            val below = Position(currentPos.x, currentPos.y + 1)
+            if (isWall(below) || isBlock(below, state.blocks) || currentPos.y >= level.height - 1) {
+                break
+            }
+            currentPos = below
+        }
+
+        return state.copy(playerPosition = currentPos)
+    }
+
+    private fun applyBlockGravity(state: GameState, blockPos: Position): GameState {
+        var currentPos = blockPos
+        var blocks = state.blocks.toMutableSet()
+
+        blocks.remove(blockPos)
+
+        while (true) {
+            val below = Position(currentPos.x, currentPos.y + 1)
+            if (isWall(below) || blocks.contains(below) || currentPos.y >= level.height - 1) {
+                break
+            }
+            currentPos = below
+        }
+
+        blocks.add(currentPos)
+        return state.copy(blocks = blocks)
+    }
+
+    private fun checkWin(state: GameState): GameState {
+        return if (state.playerPosition == level.doorPosition) {
+            state.copy(levelCompleted = true)
+        } else {
+            state
+        }
+    }
+
+    private fun isWall(pos: Position): Boolean {
+        return level.walls.contains(pos) || pos.x < 0 || pos.x >= level.width || pos.y < 0
+    }
+
+    private fun isBlock(pos: Position, blocks: Set<Position>): Boolean {
+        return blocks.contains(pos)
+    }
+
+    fun getCellAt(x: Int, y: Int, state: GameState): CellInfo {
+        val pos = Position(x, y)
+        return when {
+            pos == level.doorPosition -> CellInfo.Door
+            pos == state.playerPosition -> CellInfo.Player(state.playerFacing, state.holdingBlock)
+            state.blocks.contains(pos) -> CellInfo.Block
+            level.walls.contains(pos) -> CellInfo.Wall
+            else -> CellInfo.Empty
+        }
+    }
+}
+
+sealed class CellInfo {
+    data object Empty : CellInfo()
+    data object Wall : CellInfo()
+    data object Block : CellInfo()
+    data object Door : CellInfo()
+    data class Player(val facing: Direction, val holdingBlock: Boolean) : CellInfo()
+}
