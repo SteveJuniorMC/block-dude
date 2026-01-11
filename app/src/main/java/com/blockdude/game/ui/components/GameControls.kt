@@ -28,55 +28,72 @@ import com.blockdude.game.ui.theme.SurfaceColor
 fun GameControls(
     onMoveLeft: () -> Unit,
     onMoveRight: () -> Unit,
+    onMoveUp: () -> Unit,
     onAction: () -> Unit,
-    isHoldingBlock: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.Center
     ) {
-        // D-Pad for movement
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+        // D-Pad layout
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            // Up button
             ControlButton(
-                onClick = onMoveLeft,
+                onClick = onMoveUp,
                 color = PrimaryBlue
             ) {
                 Text(
-                    text = "<",
+                    text = "^",
                     color = Color.White,
-                    modifier = Modifier.offset(x = (-2).dp)
+                    modifier = Modifier.offset(y = 2.dp)
                 )
             }
 
+            // Left and Right buttons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(56.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ControlButton(
+                    onClick = onMoveLeft,
+                    color = PrimaryBlue
+                ) {
+                    Text(
+                        text = "<",
+                        color = Color.White,
+                        modifier = Modifier.offset(x = (-2).dp)
+                    )
+                }
+
+                ControlButton(
+                    onClick = onMoveRight,
+                    color = PrimaryBlue
+                ) {
+                    Text(
+                        text = ">",
+                        color = Color.White,
+                        modifier = Modifier.offset(x = 2.dp)
+                    )
+                }
+            }
+
+            // Down button (action - pick up / place)
             ControlButton(
-                onClick = onMoveRight,
-                color = PrimaryBlue
+                onClick = onAction,
+                color = AccentOrange
             ) {
                 Text(
-                    text = ">",
+                    text = "v",
                     color = Color.White,
-                    modifier = Modifier.offset(x = 2.dp)
+                    modifier = Modifier.offset(y = (-2).dp)
                 )
             }
-        }
-
-        // Action button (pick up / place)
-        ControlButton(
-            onClick = onAction,
-            color = AccentOrange,
-            size = 80.dp
-        ) {
-            Text(
-                text = if (isHoldingBlock) "PUT" else "GET",
-                color = Color.White
-            )
         }
     }
 }

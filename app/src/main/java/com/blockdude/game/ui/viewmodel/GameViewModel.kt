@@ -77,6 +77,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun moveUp() {
+        val state = _gameState.value ?: return
+        val engine = gameEngine ?: return
+        val newState = engine.moveUp(state)
+        if (newState != state) {
+            soundManager.playMove()
+            _gameState.value = newState
+            checkLevelComplete(newState)
+        }
+    }
+
     fun pickUpOrPlace() {
         val state = _gameState.value ?: return
         val engine = gameEngine ?: return

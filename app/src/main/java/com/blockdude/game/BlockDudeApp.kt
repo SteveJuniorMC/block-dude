@@ -72,6 +72,7 @@ fun BlockDudeApp(
                         gameEngine = engine,
                         onMoveLeft = viewModel::moveLeft,
                         onMoveRight = viewModel::moveRight,
+                        onMoveUp = viewModel::moveUp,
                         onAction = viewModel::pickUpOrPlace,
                         onRestart = viewModel::restartLevel,
                         onBack = {

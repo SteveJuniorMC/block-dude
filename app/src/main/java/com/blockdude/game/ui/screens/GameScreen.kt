@@ -30,6 +30,7 @@ fun GameScreen(
     gameEngine: GameEngine,
     onMoveLeft: () -> Unit,
     onMoveRight: () -> Unit,
+    onMoveUp: () -> Unit,
     onAction: () -> Unit,
     onRestart: () -> Unit,
     onBack: () -> Unit,
@@ -72,8 +73,8 @@ fun GameScreen(
             GameControls(
                 onMoveLeft = onMoveLeft,
                 onMoveRight = onMoveRight,
+                onMoveUp = onMoveUp,
                 onAction = onAction,
-                isHoldingBlock = gameState.holdingBlock,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
         }

@@ -29,6 +29,33 @@ class GameEngine(private val level: Level) {
         return tryMove(newState, 1)
     }
 
+    fun moveUp(state: GameState): GameState {
+        if (state.levelCompleted) return state
+        val dx = if (state.playerFacing == Direction.LEFT) -1 else 1
+        val newState = state.copy(moves = state.moves + 1)
+        return tryClimb(newState, dx)
+    }
+
+    private fun tryClimb(state: GameState, dx: Int): GameState {
+        val currentPos = state.playerPosition
+        val targetPos = Position(currentPos.x + dx, currentPos.y)
+        val climbPos = Position(currentPos.x + dx, currentPos.y - 1)
+        val aboveClimb = Position(climbPos.x, climbPos.y - 1)
+        val aboveCurrent = Position(currentPos.x, currentPos.y - 1)
+
+        // Can climb if: there's a wall/block at target level, climb position is free,
+        // nothing above current position (or holding block accounts for it), nothing above climb position
+        if ((isWall(targetPos) || isBlock(targetPos, state.blocks)) &&
+            !isWall(climbPos) && !isBlock(climbPos, state.blocks) &&
+            !isWall(aboveClimb) && !isBlock(aboveClimb, state.blocks) &&
+            (!state.holdingBlock || (!isWall(aboveCurrent) && !isBlock(aboveCurrent, state.blocks)))
+        ) {
+            val movedState = state.copy(playerPosition = climbPos)
+            return applyGravity(movedState).let { checkWin(it) }
+        }
+        return state.copy(moves = state.moves - 1) // Undo move increment if can't climb
+    }
+
     private fun tryMove(state: GameState, dx: Int): GameState {
         val currentPos = state.playerPosition
         val targetPos = Position(currentPos.x + dx, currentPos.y)
