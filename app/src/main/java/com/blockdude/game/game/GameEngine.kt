@@ -59,6 +59,7 @@ class GameEngine(private val level: Level) {
     private fun tryMove(state: GameState, dx: Int): GameState {
         val currentPos = state.playerPosition
         val targetPos = Position(currentPos.x + dx, currentPos.y)
+        val aboveTarget = Position(targetPos.x, targetPos.y - 1)
 
         // Check if target is blocked by wall - can't move horizontally into walls
         if (isWall(targetPos)) {
@@ -67,6 +68,11 @@ class GameEngine(private val level: Level) {
 
         // Check if target has a block - can't move horizontally into blocks
         if (isBlock(targetPos, state.blocks)) {
+            return state.copy(moves = state.moves - 1)
+        }
+
+        // If holding a block, check if there's space above the target position
+        if (state.holdingBlock && (isWall(aboveTarget) || isBlock(aboveTarget, state.blocks))) {
             return state.copy(moves = state.moves - 1)
         }
 
