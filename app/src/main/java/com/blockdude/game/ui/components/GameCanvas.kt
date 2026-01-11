@@ -99,68 +99,183 @@ fun GameCanvas(
 }
 
 private fun DrawScope.drawWall(x: Float, y: Float, size: Float) {
-    // Main wall block
+    // Main wall block with base color
     drawRect(
         color = WallColor,
         topLeft = Offset(x, y),
         size = Size(size, size)
     )
-    // Brick pattern
+
+    // Brick pattern - 3 rows of bricks
     val brickHeight = size / 3
     val brickWidth = size / 2
+    val mortarColor = Color(0xFF2A2A2A)
+    val highlightColor = Color(0xFF6A6A6A)
+    val shadowColor = Color(0xFF1A1A1A)
+    val mortarWidth = size * 0.06f
 
+    // Draw individual bricks with highlights and shadows
     for (row in 0 until 3) {
-        val offset = if (row % 2 == 0) 0f else brickWidth / 2
+        val offsetX = if (row % 2 == 0) 0f else brickWidth / 2
+        val brickY = y + row * brickHeight
+
+        // Draw bricks in this row
+        var brickX = x + offsetX - brickWidth
+        while (brickX < x + size) {
+            val drawX = maxOf(brickX, x)
+            val drawWidth = minOf(brickX + brickWidth, x + size) - drawX
+            if (drawWidth > 0) {
+                val brickLeft = drawX + mortarWidth / 2
+                val brickTop = brickY + mortarWidth / 2
+                val brickW = drawWidth - mortarWidth
+                val brickH = brickHeight - mortarWidth
+
+                if (brickW > 0 && brickH > 0) {
+                    // Brick highlight (top-left edges)
+                    drawLine(
+                        color = highlightColor,
+                        start = Offset(brickLeft, brickTop),
+                        end = Offset(brickLeft + brickW, brickTop),
+                        strokeWidth = size * 0.04f
+                    )
+                    drawLine(
+                        color = highlightColor,
+                        start = Offset(brickLeft, brickTop),
+                        end = Offset(brickLeft, brickTop + brickH),
+                        strokeWidth = size * 0.04f
+                    )
+
+                    // Brick shadow (bottom-right edges)
+                    drawLine(
+                        color = shadowColor,
+                        start = Offset(brickLeft, brickTop + brickH),
+                        end = Offset(brickLeft + brickW, brickTop + brickH),
+                        strokeWidth = size * 0.04f
+                    )
+                    drawLine(
+                        color = shadowColor,
+                        start = Offset(brickLeft + brickW, brickTop),
+                        end = Offset(brickLeft + brickW, brickTop + brickH),
+                        strokeWidth = size * 0.04f
+                    )
+                }
+            }
+            brickX += brickWidth
+        }
+    }
+
+    // Draw mortar lines
+    // Horizontal mortar lines
+    for (row in 1 until 3) {
         drawLine(
-            color = Color(0xFF3A3A3A),
+            color = mortarColor,
             start = Offset(x, y + row * brickHeight),
             end = Offset(x + size, y + row * brickHeight),
-            strokeWidth = 1f
+            strokeWidth = mortarWidth
         )
     }
+
+    // Vertical mortar lines (staggered)
     drawLine(
-        color = Color(0xFF3A3A3A),
+        color = mortarColor,
         start = Offset(x + brickWidth, y),
         end = Offset(x + brickWidth, y + brickHeight),
-        strokeWidth = 1f
+        strokeWidth = mortarWidth
     )
     drawLine(
-        color = Color(0xFF3A3A3A),
+        color = mortarColor,
         start = Offset(x + brickWidth / 2, y + brickHeight),
         end = Offset(x + brickWidth / 2, y + 2 * brickHeight),
-        strokeWidth = 1f
+        strokeWidth = mortarWidth
     )
     drawLine(
-        color = Color(0xFF3A3A3A),
+        color = mortarColor,
         start = Offset(x + brickWidth, y + 2 * brickHeight),
         end = Offset(x + brickWidth, y + size),
-        strokeWidth = 1f
+        strokeWidth = mortarWidth
     )
 }
 
 private fun DrawScope.drawBlock(x: Float, y: Float, size: Float) {
     val padding = size * 0.05f
+    val shadowOffset = size * 0.08f
 
-    // Shadow
+    // Drop shadow
+    drawRect(
+        color = Color(0xFF1A1A1A),
+        topLeft = Offset(x + shadowOffset, y + shadowOffset),
+        size = Size(size - padding, size - padding)
+    )
+
+    // Main block base (darker wood)
     drawRect(
         color = BlockDark,
         topLeft = Offset(x + padding, y + padding),
         size = Size(size - padding * 2, size - padding * 2)
     )
 
-    // Main block
+    // Main block face
     drawRect(
         color = BlockColor,
         topLeft = Offset(x + padding, y + padding),
-        size = Size(size - padding * 3, size - padding * 3)
+        size = Size(size - padding * 2 - shadowOffset, size - padding * 2 - shadowOffset)
     )
 
-    // Highlight
+    // Wood grain lines
+    val grainColor = Color(0xFFB8956A)
+    val grainWidth = size * 0.02f
+    val blockLeft = x + padding
+    val blockTop = y + padding
+    val blockSize = size - padding * 2 - shadowOffset
+
+    // Horizontal wood grain
     drawLine(
-        color = Color(0xFFE8C9A0),
-        start = Offset(x + padding * 2, y + padding * 2),
-        end = Offset(x + size - padding * 4, y + padding * 2),
-        strokeWidth = 2f
+        color = grainColor,
+        start = Offset(blockLeft + blockSize * 0.1f, blockTop + blockSize * 0.3f),
+        end = Offset(blockLeft + blockSize * 0.9f, blockTop + blockSize * 0.3f),
+        strokeWidth = grainWidth
+    )
+    drawLine(
+        color = grainColor,
+        start = Offset(blockLeft + blockSize * 0.15f, blockTop + blockSize * 0.5f),
+        end = Offset(blockLeft + blockSize * 0.85f, blockTop + blockSize * 0.5f),
+        strokeWidth = grainWidth
+    )
+    drawLine(
+        color = grainColor,
+        start = Offset(blockLeft + blockSize * 0.1f, blockTop + blockSize * 0.7f),
+        end = Offset(blockLeft + blockSize * 0.9f, blockTop + blockSize * 0.7f),
+        strokeWidth = grainWidth
+    )
+
+    // Top highlight edge
+    drawLine(
+        color = Color(0xFFE8D4B8),
+        start = Offset(blockLeft, blockTop),
+        end = Offset(blockLeft + blockSize, blockTop),
+        strokeWidth = size * 0.06f
+    )
+    // Left highlight edge
+    drawLine(
+        color = Color(0xFFDEC9A8),
+        start = Offset(blockLeft, blockTop),
+        end = Offset(blockLeft, blockTop + blockSize),
+        strokeWidth = size * 0.04f
+    )
+
+    // Bottom shadow edge
+    drawLine(
+        color = Color(0xFF8B6914),
+        start = Offset(blockLeft, blockTop + blockSize),
+        end = Offset(blockLeft + blockSize, blockTop + blockSize),
+        strokeWidth = size * 0.04f
+    )
+    // Right shadow edge
+    drawLine(
+        color = Color(0xFF9A7520),
+        start = Offset(blockLeft + blockSize, blockTop),
+        end = Offset(blockLeft + blockSize, blockTop + blockSize),
+        strokeWidth = size * 0.04f
     )
 }
 
@@ -239,18 +354,7 @@ private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direct
         val blockSize = size * 0.85f
         val blockX = x + size / 2 - blockSize / 2
         val blockY = y - blockSize + size * 0.1f
-        val padding = blockSize * 0.05f
-
-        drawRect(
-            color = BlockDark,
-            topLeft = Offset(blockX + padding, blockY + padding),
-            size = Size(blockSize - padding * 2, blockSize - padding * 2)
-        )
-        drawRect(
-            color = BlockColor,
-            topLeft = Offset(blockX + padding, blockY + padding),
-            size = Size(blockSize - padding * 3, blockSize - padding * 3)
-        )
+        drawBlock(blockX, blockY, blockSize)
     }
 
     // Draw player sprite pixel by pixel

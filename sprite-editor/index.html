@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Block Dude Sprite Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 { text-align: center; margin-bottom: 20px; }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .editors {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .editor {
+            text-align: center;
+        }
+        .editor h3 { margin: 0 0 10px 0; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            background: #333;
+            padding: 2px;
+            border-radius: 4px;
+            width: 200px;
+            height: 200px;
+            touch-action: none;
+            user-select: none;
+        }
+        .cell {
+            background: #fff;
+            cursor: pointer;
+        }
+        .cell.filled {
+            background: #000;
+        }
+        .controls {
+            margin-top: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        input[type="text"] {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background: #333;
+            color: #fff;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #4a4a8a;
+            color: #fff;
+            transition: background 0.2s;
+        }
+        button:hover { background: #5a5a9a; }
+        button.primary { background: #2a6a4a; }
+        button.primary:hover { background: #3a7a5a; }
+        button.danger { background: #8a3a3a; }
+        button.danger:hover { background: #9a4a4a; }
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            color: #8f8;
+            min-height: 24px;
+        }
+        .saved-sprites {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .saved-sprites h3 { margin-bottom: 10px; }
+        .sprite-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .sprite-btn {
+            background: #333;
+            padding: 8px 16px;
+        }
+        .preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .preview-label { margin: 5px; }
+        .preview canvas {
+            border: 2px solid #333;
+            background: #222;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Block Dude Sprite Editor</h1>
+
+        <div class="editors">
+            <div class="editor">
+                <h3>Left Facing</h3>
+                <div class="grid" id="grid-left"></div>
+            </div>
+            <div class="editor">
+                <h3>Right Facing</h3>
+                <div class="grid" id="grid-right"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="row">
+                <input type="text" id="sprite-name" placeholder="Sprite name" value="player">
+            </div>
+            <div class="row">
+                <button class="primary" onclick="save()">Save</button>
+                <button onclick="mirrorLeftToRight()">Left -> Right (Mirror)</button>
+                <button onclick="mirrorRightToLeft()">Right -> Left (Mirror)</button>
+            </div>
+            <div class="row">
+                <button class="danger" onclick="clearLeft()">Clear Left</button>
+                <button class="danger" onclick="clearRight()">Clear Right</button>
+            </div>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="preview">
+            <h3>Preview (4x scale)</h3>
+            <span class="preview-label">Left:</span>
+            <canvas id="preview-left" width="32" height="32"></canvas>
+            <span class="preview-label">Right:</span>
+            <canvas id="preview-right" width="32" height="32"></canvas>
+        </div>
+
+        <div class="saved-sprites">
+            <h3>Saved Sprites</h3>
+            <div class="sprite-list" id="sprite-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const SIZE = 8;
+
+        // Global state
+        let grids = {
+            left: Array(SIZE).fill().map(() => Array(SIZE).fill(0)),
+            right: Array(SIZE).fill().map(() => Array(SIZE).fill(0))
+        };
+
+        let isDrawing = false;
+        let drawValue = 1;
+
+        function initGrid(containerId, gridName) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            for (let y = 0; y < SIZE; y++) {
+                for (let x = 0; x < SIZE; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell' + (grids[gridName][y][x] ? ' filled' : '');
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    cell.dataset.grid = gridName;
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        function updateCellDisplay(gridName, x, y) {
+            const container = document.getElementById('grid-' + gridName);
+            const index = y * SIZE + x;
+            const cell = container.children[index];
+            if (cell) {
+                cell.className = 'cell' + (grids[gridName][y][x] ? ' filled' : '');
+            }
+        }
+
+        function toggleCell(gridName, x, y, forceValue = null) {
+            if (forceValue !== null) {
+                grids[gridName][y][x] = forceValue;
+            } else {
+                grids[gridName][y][x] = grids[gridName][y][x] ? 0 : 1;
+            }
+            updateCellDisplay(gridName, x, y);
+            updatePreview();
+        }
+
+        function handlePointerDown(e) {
+            if (!e.target.classList.contains('cell')) return;
+            e.preventDefault();
+            isDrawing = true;
+            const x = parseInt(e.target.dataset.x);
+            const y = parseInt(e.target.dataset.y);
+            const gridName = e.target.dataset.grid;
+            drawValue = grids[gridName][y][x] ? 0 : 1;
+            toggleCell(gridName, x, y, drawValue);
+        }
+
+        function handlePointerMove(e) {
+            if (!isDrawing) return;
+            if (!e.target.classList.contains('cell')) return;
+            e.preventDefault();
+            const x = parseInt(e.target.dataset.x);
+            const y = parseInt(e.target.dataset.y);
+            const gridName = e.target.dataset.grid;
+            toggleCell(gridName, x, y, drawValue);
+        }
+
+        function handlePointerUp() {
+            isDrawing = false;
+        }
+
+        function handleTouchMove(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (elem && elem.classList.contains('cell')) {
+                const x = parseInt(elem.dataset.x);
+                const y = parseInt(elem.dataset.y);
+                const gridName = elem.dataset.grid;
+                toggleCell(gridName, x, y, drawValue);
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('mousedown', handlePointerDown);
+        document.addEventListener('mouseover', handlePointerMove);
+        document.addEventListener('mouseup', handlePointerUp);
+        document.addEventListener('touchstart', handlePointerDown, { passive: false });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handlePointerUp);
+
+        function renderGrids() {
+            initGrid('grid-left', 'left');
+            initGrid('grid-right', 'right');
+            updatePreview();
+        }
+
+        function updatePreview() {
+            drawPreview('preview-left', grids.left);
+            drawPreview('preview-right', grids.right);
+        }
+
+        function drawPreview(canvasId, grid) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const scale = 4;
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, 0, SIZE * scale, SIZE * scale);
+            ctx.fillStyle = '#fff';
+            for (let y = 0; y < SIZE; y++) {
+                for (let x = 0; x < SIZE; x++) {
+                    if (grid[y][x]) {
+                        ctx.fillRect(x * scale, y * scale, scale, scale);
+                    }
+                }
+            }
+        }
+
+        function mirrorLeftToRight() {
+            grids.right = grids.left.map(row => [...row].reverse());
+            renderGrids();
+        }
+
+        function mirrorRightToLeft() {
+            grids.left = grids.right.map(row => [...row].reverse());
+            renderGrids();
+        }
+
+        function clearLeft() {
+            grids.left = Array(SIZE).fill().map(() => Array(SIZE).fill(0));
+            renderGrids();
+        }
+
+        function clearRight() {
+            grids.right = Array(SIZE).fill().map(() => Array(SIZE).fill(0));
+            renderGrids();
+        }
+
+        function showStatus(msg, isError = false) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.style.color = isError ? '#f88' : '#8f8';
+        }
+
+        async function save() {
+            const name = document.getElementById('sprite-name').value.trim() || 'sprite';
+            try {
+                const res = await fetch('/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, left: grids.left, right: grids.right })
+                });
+                const data = await res.json();
+                showStatus(`Saved to ${data.path}`);
+                loadSpriteList();
+            } catch (e) {
+                showStatus('Error saving: ' + e.message, true);
+            }
+        }
+
+        async function loadSpriteList() {
+            try {
+                const res = await fetch('/list');
+                const sprites = await res.json();
+                const container = document.getElementById('sprite-list');
+                container.innerHTML = sprites.map(s =>
+                    `<button class="sprite-btn" onclick="loadSprite('${s}')">${s}</button>`
+                ).join('') || '<em>No saved sprites</em>';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadSprite(name) {
+            try {
+                const res = await fetch('/load/' + name);
+                const data = await res.json();
+                grids.left = data.left;
+                grids.right = data.right;
+                document.getElementById('sprite-name').value = name;
+                renderGrids();
+                showStatus('Loaded ' + name);
+            } catch (e) {
+                showStatus('Error loading: ' + e.message, true);
+            }
+        }
+
+        // Initialize
+        renderGrids();
+        loadSpriteList();
+    </script>
+</body>
+</html>
