@@ -207,15 +207,37 @@ private fun DrawScope.drawDoorOpen(x: Float, y: Float, size: Float) {
     )
 }
 
+// Player sprite data (8x8 pixels)
+private val SPRITE_LEFT = arrayOf(
+    intArrayOf(0, 0, 0, 1, 1, 1, 0, 0),
+    intArrayOf(0, 1, 1, 1, 1, 1, 1, 0),
+    intArrayOf(0, 0, 0, 1, 0, 0, 1, 0),
+    intArrayOf(0, 0, 1, 0, 0, 0, 1, 0),
+    intArrayOf(0, 0, 0, 1, 0, 1, 0, 0),
+    intArrayOf(0, 1, 0, 1, 0, 1, 0, 0),
+    intArrayOf(0, 0, 0, 0, 1, 0, 0, 0),
+    intArrayOf(0, 0, 1, 1, 0, 1, 1, 0)
+)
+
+private val SPRITE_RIGHT = arrayOf(
+    intArrayOf(0, 0, 1, 1, 1, 0, 0, 0),
+    intArrayOf(0, 1, 1, 1, 1, 1, 1, 0),
+    intArrayOf(0, 1, 0, 0, 1, 0, 0, 0),
+    intArrayOf(0, 1, 0, 0, 0, 1, 0, 0),
+    intArrayOf(0, 0, 1, 0, 1, 0, 0, 0),
+    intArrayOf(0, 0, 1, 0, 1, 0, 1, 0),
+    intArrayOf(0, 0, 0, 1, 0, 0, 0, 0),
+    intArrayOf(0, 1, 1, 0, 1, 1, 0, 0)
+)
+
 private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direction, holdingBlock: Boolean) {
-    val centerX = x + size / 2
-    val strokeWidth = size * 0.08f
-    val facingMultiplier = if (facing == Direction.LEFT) -1f else 1f
+    val pixelSize = size / 8f
+    val sprite = if (facing == Direction.LEFT) SPRITE_LEFT else SPRITE_RIGHT
 
     // Held block (drawn first, behind player, above head)
     if (holdingBlock) {
         val blockSize = size * 0.85f
-        val blockX = centerX - blockSize / 2
+        val blockX = x + size / 2 - blockSize / 2
         val blockY = y - blockSize + size * 0.1f
         val padding = blockSize * 0.05f
 
@@ -231,90 +253,16 @@ private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direct
         )
     }
 
-    // Legs (stick lines)
-    val hipY = y + size * 0.6f
-    val footY = y + size
-    drawLine(
-        color = Color.White,
-        start = Offset(centerX, hipY),
-        end = Offset(centerX - size * 0.15f, footY),
-        strokeWidth = strokeWidth
-    )
-    drawLine(
-        color = Color.White,
-        start = Offset(centerX, hipY),
-        end = Offset(centerX + size * 0.15f, footY),
-        strokeWidth = strokeWidth
-    )
-
-    // Body (stick line)
-    val shoulderY = y + size * 0.35f
-    drawLine(
-        color = Color.White,
-        start = Offset(centerX, hipY),
-        end = Offset(centerX, shoulderY),
-        strokeWidth = strokeWidth
-    )
-
-    // Arms
-    val armY = shoulderY + size * 0.05f
-    if (holdingBlock) {
-        // Arms up holding block
-        drawLine(
-            color = Color.White,
-            start = Offset(centerX, armY),
-            end = Offset(centerX - size * 0.2f, y + size * 0.15f),
-            strokeWidth = strokeWidth
-        )
-        drawLine(
-            color = Color.White,
-            start = Offset(centerX, armY),
-            end = Offset(centerX + size * 0.2f, y + size * 0.15f),
-            strokeWidth = strokeWidth
-        )
-    } else {
-        // Arms at sides, one extended in facing direction
-        drawLine(
-            color = Color.White,
-            start = Offset(centerX, armY),
-            end = Offset(centerX - size * 0.25f * facingMultiplier, armY + size * 0.15f),
-            strokeWidth = strokeWidth
-        )
-        drawLine(
-            color = Color.White,
-            start = Offset(centerX, armY),
-            end = Offset(centerX + size * 0.35f * facingMultiplier, armY),
-            strokeWidth = strokeWidth
-        )
+    // Draw player sprite pixel by pixel
+    for (row in 0 until 8) {
+        for (col in 0 until 8) {
+            if (sprite[row][col] == 1) {
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(x + col * pixelSize, y + row * pixelSize),
+                    size = Size(pixelSize, pixelSize)
+                )
+            }
+        }
     }
-
-    // Head (circle)
-    val headRadius = size * 0.15f
-    val headY = y + size * 0.2f
-    drawCircle(
-        color = Color.White,
-        radius = headRadius,
-        center = Offset(centerX, headY)
-    )
-
-    // Baseball cap
-    val capColor = Color(0xFF2244AA)
-    // Cap dome
-    drawArc(
-        color = capColor,
-        startAngle = 180f,
-        sweepAngle = 180f,
-        useCenter = true,
-        topLeft = Offset(centerX - headRadius * 1.2f, headY - headRadius * 1.4f),
-        size = Size(headRadius * 2.4f, headRadius * 1.6f)
-    )
-    // Cap brim
-    val brimLength = size * 0.25f
-    val brimY = headY - headRadius * 0.3f
-    drawLine(
-        color = capColor,
-        start = Offset(centerX - size * 0.05f * facingMultiplier, brimY),
-        end = Offset(centerX + brimLength * facingMultiplier, brimY - size * 0.02f),
-        strokeWidth = size * 0.08f
-    )
 }
