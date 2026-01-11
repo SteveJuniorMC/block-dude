@@ -154,10 +154,10 @@ object LevelRepository {
             levelString = """
                 ################
 
-                        B  B
+                           B
                        ########
                        #
-                     B #  B  B
+                     B #  BB B
                 B   #### #######
                 BB     #
                 ####   #
