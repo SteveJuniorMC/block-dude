@@ -112,8 +112,8 @@ private fun DrawScope.drawWall(x: Float, y: Float, size: Float) {
     val mortarColor = Color(0xFF252525)
     val mortarWidth = size * 0.05f
 
-    // Draw horizontal mortar lines
-    for (row in 1 until 4) {
+    // Draw horizontal mortar lines (including top and bottom edges for seamless vertical tiling)
+    for (row in 0..4) {
         drawLine(
             color = mortarColor,
             start = Offset(x, y + row * brickHeight),
@@ -165,60 +165,50 @@ private fun DrawScope.drawWall(x: Float, y: Float, size: Float) {
 }
 
 private fun DrawScope.drawBlock(x: Float, y: Float, size: Float) {
-    val margin = size * 0.06f
-    val bevel = size * 0.12f
+    val margin = size * 0.05f
 
-    // Main block area
+    // Main block
     val blockX = x + margin
     val blockY = y + margin
     val blockW = size - margin * 2
     val blockH = size - margin * 2
 
-    // Bottom-right shadow (3D effect)
+    // Flat block face
     drawRect(
-        color = BlockDark,
+        color = BlockColor,
         topLeft = Offset(blockX, blockY),
         size = Size(blockW, blockH)
     )
 
-    // Top face (lighter)
-    drawRect(
-        color = BlockColor,
-        topLeft = Offset(blockX, blockY),
-        size = Size(blockW - bevel, blockH - bevel)
-    )
-
     // Wood grain lines
-    val grainColor = Color(0xFFB08050)
-    val grainWidth = size * 0.025f
-    val faceW = blockW - bevel
-    val faceH = blockH - bevel
+    val grainColor = Color(0xFFA07040)
+    val grainWidth = size * 0.03f
 
     drawLine(
         color = grainColor,
-        start = Offset(blockX + faceW * 0.1f, blockY + faceH * 0.25f),
-        end = Offset(blockX + faceW * 0.9f, blockY + faceH * 0.25f),
+        start = Offset(blockX + blockW * 0.08f, blockY + blockH * 0.22f),
+        end = Offset(blockX + blockW * 0.92f, blockY + blockH * 0.22f),
         strokeWidth = grainWidth
     )
     drawLine(
         color = grainColor,
-        start = Offset(blockX + faceW * 0.15f, blockY + faceH * 0.5f),
-        end = Offset(blockX + faceW * 0.85f, blockY + faceH * 0.5f),
+        start = Offset(blockX + blockW * 0.12f, blockY + blockH * 0.48f),
+        end = Offset(blockX + blockW * 0.88f, blockY + blockH * 0.48f),
         strokeWidth = grainWidth
     )
     drawLine(
         color = grainColor,
-        start = Offset(blockX + faceW * 0.1f, blockY + faceH * 0.75f),
-        end = Offset(blockX + faceW * 0.9f, blockY + faceH * 0.75f),
+        start = Offset(blockX + blockW * 0.08f, blockY + blockH * 0.75f),
+        end = Offset(blockX + blockW * 0.92f, blockY + blockH * 0.75f),
         strokeWidth = grainWidth
     )
 
-    // Top highlight
-    drawLine(
-        color = Color(0xFFE8D4B8),
-        start = Offset(blockX, blockY + grainWidth),
-        end = Offset(blockX + faceW, blockY + grainWidth),
-        strokeWidth = grainWidth * 2
+    // Thin border
+    drawRect(
+        color = Color(0xFF805020),
+        topLeft = Offset(blockX, blockY),
+        size = Size(blockW, blockH),
+        style = androidx.compose.ui.graphics.drawscope.Stroke(width = size * 0.04f)
     )
 }
 
