@@ -53,7 +53,7 @@ fun GameControls(
 
             // Left and Right buttons
             Row(
-                horizontalArrangement = Arrangement.spacedBy(56.dp),
+                horizontalArrangement = Arrangement.spacedBy(72.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ControlButton(
@@ -86,7 +86,7 @@ fun GameControls(
 private fun ControlButton(
     onClick: () -> Unit,
     color: Color,
-    size: androidx.compose.ui.unit.Dp = 64.dp,
+    size: androidx.compose.ui.unit.Dp = 80.dp,
     content: @Composable () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -174,7 +174,7 @@ private enum class ArrowDirection {
 }
 
 @Composable
-private fun ArrowIcon(direction: ArrowDirection, size: Int = 24) {
+private fun ArrowIcon(direction: ArrowDirection, size: Int = 48) {
     Canvas(modifier = Modifier.size(size.dp)) {
         val path = Path()
         val w = this.size.width
@@ -213,7 +213,7 @@ private fun ArrowIcon(direction: ArrowDirection, size: Int = 24) {
 }
 
 @Composable
-private fun ActionIcon(size: Int = 28) {
+private fun ActionIcon(size: Int = 48) {
     Canvas(modifier = Modifier.size(size.dp)) {
         val w = this.size.width
         val h = this.size.height
