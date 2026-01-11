@@ -43,13 +43,16 @@ class GameEngine(private val level: Level) {
         val aboveClimb = Position(climbPos.x, climbPos.y - 1)
         val aboveCurrent = Position(currentPos.x, currentPos.y - 1)
 
-        // Can climb if: there's a wall/block at target level, climb position is free,
-        // nothing above current position (or holding block accounts for it), nothing above climb position
-        if ((isWall(targetPos) || isBlock(targetPos, state.blocks)) &&
+        // Can climb if: there's a wall/block at target level, climb position is free
+        // If holding block: also need space above climb position and above current position
+        val canClimb = (isWall(targetPos) || isBlock(targetPos, state.blocks)) &&
             !isWall(climbPos) && !isBlock(climbPos, state.blocks) &&
-            !isWall(aboveClimb) && !isBlock(aboveClimb, state.blocks) &&
-            (!state.holdingBlock || (!isWall(aboveCurrent) && !isBlock(aboveCurrent, state.blocks)))
-        ) {
+            (!state.holdingBlock || (
+                !isWall(aboveClimb) && !isBlock(aboveClimb, state.blocks) &&
+                !isWall(aboveCurrent) && !isBlock(aboveCurrent, state.blocks)
+            ))
+
+        if (canClimb) {
             val movedState = state.copy(playerPosition = climbPos)
             return applyGravity(movedState).let { checkWin(it) }
         }
