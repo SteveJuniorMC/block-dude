@@ -550,6 +550,21 @@ class LevelEditor {
         const levelNum = parseInt(document.getElementById('levelNumber').value) || 1;
         const levelName = document.getElementById('levelName').value || 'Unnamed Level';
 
+        // Check if level already exists
+        try {
+            const checkResponse = await fetch(`/api/levels/${levelNum}`);
+            if (checkResponse.ok) {
+                // Level exists, ask for confirmation
+                const confirmed = confirm(`Level ${levelNum} already exists. Do you want to overwrite it?`);
+                if (!confirmed) {
+                    this.showMessage('Save cancelled', 'info');
+                    return;
+                }
+            }
+        } catch (e) {
+            // Level doesn't exist, continue with save
+        }
+
         const gridStrings = [];
         for (let y = 0; y < this.height; y++) {
             let row = '';
