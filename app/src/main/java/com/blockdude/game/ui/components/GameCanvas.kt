@@ -235,13 +235,13 @@ private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direct
     val hipY = y + size * 0.6f
     val footY = y + size
     drawLine(
-        color = Color.Black,
+        color = Color.White,
         start = Offset(centerX, hipY),
         end = Offset(centerX - size * 0.15f, footY),
         strokeWidth = strokeWidth
     )
     drawLine(
-        color = Color.Black,
+        color = Color.White,
         start = Offset(centerX, hipY),
         end = Offset(centerX + size * 0.15f, footY),
         strokeWidth = strokeWidth
@@ -250,7 +250,7 @@ private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direct
     // Body (stick line)
     val shoulderY = y + size * 0.35f
     drawLine(
-        color = Color.Black,
+        color = Color.White,
         start = Offset(centerX, hipY),
         end = Offset(centerX, shoulderY),
         strokeWidth = strokeWidth
@@ -261,13 +261,13 @@ private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direct
     if (holdingBlock) {
         // Arms up holding block
         drawLine(
-            color = Color.Black,
+            color = Color.White,
             start = Offset(centerX, armY),
             end = Offset(centerX - size * 0.2f, y + size * 0.15f),
             strokeWidth = strokeWidth
         )
         drawLine(
-            color = Color.Black,
+            color = Color.White,
             start = Offset(centerX, armY),
             end = Offset(centerX + size * 0.2f, y + size * 0.15f),
             strokeWidth = strokeWidth
@@ -275,13 +275,13 @@ private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direct
     } else {
         // Arms at sides, one extended in facing direction
         drawLine(
-            color = Color.Black,
+            color = Color.White,
             start = Offset(centerX, armY),
             end = Offset(centerX - size * 0.25f * facingMultiplier, armY + size * 0.15f),
             strokeWidth = strokeWidth
         )
         drawLine(
-            color = Color.Black,
+            color = Color.White,
             start = Offset(centerX, armY),
             end = Offset(centerX + size * 0.35f * facingMultiplier, armY),
             strokeWidth = strokeWidth
@@ -292,7 +292,7 @@ private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direct
     val headRadius = size * 0.15f
     val headY = y + size * 0.2f
     drawCircle(
-        color = Color.Black,
+        color = Color.White,
         radius = headRadius,
         center = Offset(centerX, headY)
     )
