@@ -121,6 +121,30 @@ object LevelRepository {
                 ################
                 ################
             """
+        ),
+
+        // Level 6
+        Level.fromString(
+            id = 6,
+            name = "Level 6",
+            levelString = """
+                ################
+
+
+                          #####
+                         #    #
+                        ##    #
+                       ##     #
+                       ##     #
+                              #
+                # ##           D
+                #######        #
+                #####  #     BB#
+                            BBB#
+                           BBBB#
+                 B P #     BBBB#
+                ################
+            """
         )
     )
 }
