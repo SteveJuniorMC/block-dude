@@ -157,7 +157,7 @@ object LevelRepository {
                         B  B
                        ########
                        #
-                       #  B  B
+                     B #  B  B
                 B   #### #######
                 BB     #
                 ####   #
