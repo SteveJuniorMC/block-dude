@@ -59,66 +59,18 @@ class GameEngine(private val level: Level) {
     private fun tryMove(state: GameState, dx: Int): GameState {
         val currentPos = state.playerPosition
         val targetPos = Position(currentPos.x + dx, currentPos.y)
-        val aboveTarget = Position(targetPos.x, targetPos.y - 1)
 
-        // Check if target is blocked by wall
+        // Check if target is blocked by wall - can't move horizontally into walls
         if (isWall(targetPos)) {
-            // Try to climb
-            val climbPos = Position(currentPos.x + dx, currentPos.y - 1)
-            val aboveClimb = Position(climbPos.x, climbPos.y - 1)
-            val aboveCurrent = Position(currentPos.x, currentPos.y - 1)
-
-            // Can climb if: there's a wall/block at target level, climb position is free,
-            // nothing above current position (or holding block accounts for it), nothing above climb position
-            if ((isWall(targetPos) || isBlock(targetPos, state.blocks)) &&
-                !isWall(climbPos) && !isBlock(climbPos, state.blocks) &&
-                !isWall(aboveClimb) && !isBlock(aboveClimb, state.blocks) &&
-                (!state.holdingBlock || (!isWall(aboveCurrent) && !isBlock(aboveCurrent, state.blocks)))
-            ) {
-                val movedState = state.copy(playerPosition = climbPos)
-                return applyGravity(movedState).let { checkWin(it) }
-            }
             return state.copy(moves = state.moves - 1) // Undo move increment if can't move
         }
 
-        // Check if target has a block
+        // Check if target has a block - can't move horizontally into blocks
         if (isBlock(targetPos, state.blocks)) {
-            // Try to push block
-            val pushTargetPos = Position(targetPos.x + dx, targetPos.y)
-
-            // Can push if: push target is empty and there's ground beneath it
-            if (!isWall(pushTargetPos) && !isBlock(pushTargetPos, state.blocks)) {
-                // Check if we need to climb to push or can push at same level
-                val belowTarget = Position(targetPos.x, targetPos.y + 1)
-                if (isWall(belowTarget) || isBlock(belowTarget, state.blocks)) {
-                    // Block is on ground at same level - push it
-                    val newBlocks = state.blocks.toMutableSet()
-                    newBlocks.remove(targetPos)
-                    newBlocks.add(pushTargetPos)
-                    val pushedState = state.copy(blocks = newBlocks)
-                    val afterBlockGravity = applyBlockGravity(pushedState, pushTargetPos)
-                    // Now move player forward
-                    val movedState = afterBlockGravity.copy(playerPosition = targetPos)
-                    return applyGravity(movedState).let { checkWin(it) }
-                }
-            }
-
-            // Try to climb over block
-            val climbPos = Position(currentPos.x + dx, currentPos.y - 1)
-            val aboveClimb = Position(climbPos.x, climbPos.y - 1)
-            val aboveCurrent = Position(currentPos.x, currentPos.y - 1)
-
-            if (!isWall(climbPos) && !isBlock(climbPos, state.blocks) &&
-                !isWall(aboveClimb) && !isBlock(aboveClimb, state.blocks) &&
-                (!state.holdingBlock || (!isWall(aboveCurrent) && !isBlock(aboveCurrent, state.blocks)))
-            ) {
-                val movedState = state.copy(playerPosition = climbPos)
-                return applyGravity(movedState).let { checkWin(it) }
-            }
             return state.copy(moves = state.moves - 1)
         }
 
-        // Check if there's ground at target or we'll fall
+        // Move horizontally and apply gravity (may fall)
         val movedState = state.copy(playerPosition = targetPos)
         return applyGravity(movedState).let { checkWin(it) }
     }

@@ -208,76 +208,113 @@ private fun DrawScope.drawDoorOpen(x: Float, y: Float, size: Float) {
 }
 
 private fun DrawScope.drawPlayer(x: Float, y: Float, size: Float, facing: Direction, holdingBlock: Boolean) {
-    val padding = size * 0.15f
-    val bodyWidth = size - padding * 2
-    val bodyHeight = size * 0.5f
-    val headSize = size * 0.35f
-    val legWidth = size * 0.15f
+    val centerX = x + size / 2
+    val strokeWidth = size * 0.08f
+    val facingMultiplier = if (facing == Direction.LEFT) -1f else 1f
 
-    // Legs
-    drawRect(
-        color = PlayerDark,
-        topLeft = Offset(x + padding + bodyWidth * 0.1f, y + size * 0.7f),
-        size = Size(legWidth, size * 0.3f)
-    )
-    drawRect(
-        color = PlayerDark,
-        topLeft = Offset(x + padding + bodyWidth * 0.6f, y + size * 0.7f),
-        size = Size(legWidth, size * 0.3f)
-    )
-
-    // Body
-    drawRect(
-        color = PlayerColor,
-        topLeft = Offset(x + padding, y + size * 0.35f),
-        size = Size(bodyWidth, bodyHeight)
-    )
-
-    // Head
-    drawCircle(
-        color = PlayerColor,
-        radius = headSize / 2,
-        center = Offset(x + size / 2, y + size * 0.25f)
-    )
-
-    // Eyes
-    val eyeOffset = if (facing == Direction.LEFT) -headSize * 0.15f else headSize * 0.15f
-    drawCircle(
-        color = Color.White,
-        radius = headSize * 0.12f,
-        center = Offset(x + size / 2 + eyeOffset, y + size * 0.22f)
-    )
-    drawCircle(
-        color = Color.Black,
-        radius = headSize * 0.06f,
-        center = Offset(x + size / 2 + eyeOffset + (if (facing == Direction.LEFT) -2f else 2f), y + size * 0.22f)
-    )
-
-    // Arm pointing in facing direction
-    val armStartX = if (facing == Direction.LEFT) x + padding else x + size - padding
-    val armEndX = if (facing == Direction.LEFT) x else x + size
-    drawLine(
-        color = PlayerDark,
-        start = Offset(armStartX, y + size * 0.45f),
-        end = Offset(armEndX, y + size * 0.4f),
-        strokeWidth = size * 0.1f
-    )
-
-    // Holding block
+    // Held block (drawn first, behind player, above head)
     if (holdingBlock) {
-        val blockX = x + size / 2 - size * 0.2f
-        val blockY = y - size * 0.3f
-        val blockSize = size * 0.4f
+        val blockSize = size * 0.85f
+        val blockX = centerX - blockSize / 2
+        val blockY = y - blockSize + size * 0.1f
+        val padding = blockSize * 0.05f
 
         drawRect(
             color = BlockDark,
-            topLeft = Offset(blockX, blockY),
-            size = Size(blockSize, blockSize)
+            topLeft = Offset(blockX + padding, blockY + padding),
+            size = Size(blockSize - padding * 2, blockSize - padding * 2)
         )
         drawRect(
             color = BlockColor,
-            topLeft = Offset(blockX, blockY),
-            size = Size(blockSize * 0.9f, blockSize * 0.9f)
+            topLeft = Offset(blockX + padding, blockY + padding),
+            size = Size(blockSize - padding * 3, blockSize - padding * 3)
         )
     }
+
+    // Legs (stick lines)
+    val hipY = y + size * 0.6f
+    val footY = y + size
+    drawLine(
+        color = Color.Black,
+        start = Offset(centerX, hipY),
+        end = Offset(centerX - size * 0.15f, footY),
+        strokeWidth = strokeWidth
+    )
+    drawLine(
+        color = Color.Black,
+        start = Offset(centerX, hipY),
+        end = Offset(centerX + size * 0.15f, footY),
+        strokeWidth = strokeWidth
+    )
+
+    // Body (stick line)
+    val shoulderY = y + size * 0.35f
+    drawLine(
+        color = Color.Black,
+        start = Offset(centerX, hipY),
+        end = Offset(centerX, shoulderY),
+        strokeWidth = strokeWidth
+    )
+
+    // Arms
+    val armY = shoulderY + size * 0.05f
+    if (holdingBlock) {
+        // Arms up holding block
+        drawLine(
+            color = Color.Black,
+            start = Offset(centerX, armY),
+            end = Offset(centerX - size * 0.2f, y + size * 0.15f),
+            strokeWidth = strokeWidth
+        )
+        drawLine(
+            color = Color.Black,
+            start = Offset(centerX, armY),
+            end = Offset(centerX + size * 0.2f, y + size * 0.15f),
+            strokeWidth = strokeWidth
+        )
+    } else {
+        // Arms at sides, one extended in facing direction
+        drawLine(
+            color = Color.Black,
+            start = Offset(centerX, armY),
+            end = Offset(centerX - size * 0.25f * facingMultiplier, armY + size * 0.15f),
+            strokeWidth = strokeWidth
+        )
+        drawLine(
+            color = Color.Black,
+            start = Offset(centerX, armY),
+            end = Offset(centerX + size * 0.35f * facingMultiplier, armY),
+            strokeWidth = strokeWidth
+        )
+    }
+
+    // Head (circle)
+    val headRadius = size * 0.15f
+    val headY = y + size * 0.2f
+    drawCircle(
+        color = Color.Black,
+        radius = headRadius,
+        center = Offset(centerX, headY)
+    )
+
+    // Baseball cap
+    val capColor = Color(0xFF2244AA)
+    // Cap dome
+    drawArc(
+        color = capColor,
+        startAngle = 180f,
+        sweepAngle = 180f,
+        useCenter = true,
+        topLeft = Offset(centerX - headRadius * 1.2f, headY - headRadius * 1.4f),
+        size = Size(headRadius * 2.4f, headRadius * 1.6f)
+    )
+    // Cap brim
+    val brimLength = size * 0.25f
+    val brimY = headY - headRadius * 0.3f
+    drawLine(
+        color = capColor,
+        start = Offset(centerX - size * 0.05f * facingMultiplier, brimY),
+        end = Offset(centerX + brimLength * facingMultiplier, brimY - size * 0.02f),
+        strokeWidth = size * 0.08f
+    )
 }
