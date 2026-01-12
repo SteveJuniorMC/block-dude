@@ -288,19 +288,19 @@ fun DPad(
     onLeft: () -> Unit,
     onRight: () -> Unit,
     modifier: Modifier = Modifier,
-    size: Dp = 200.dp
+    dpadSize: Dp = 200.dp
 ) {
     var pressedDirection by remember { mutableStateOf<DPadDirection?>(null) }
 
     Box(
-        modifier = modifier.size(size),
+        modifier = modifier.size(dpadSize),
         contentAlignment = Alignment.Center
     ) {
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
-                    val inputSize = size
+                    val inputSize = this.size
                     detectTapGestures(
                         onPress = { offset ->
                             val direction = getDPadDirection(offset, inputSize.width.toFloat(), inputSize.height.toFloat())

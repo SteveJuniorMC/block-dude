@@ -35,7 +35,7 @@ fun GameControls(
             onDown = onAction,  // Down also triggers action
             onLeft = onMoveLeft,
             onRight = onMoveRight,
-            size = 160.dp
+            dpadSize = 160.dp
         )
 
         // Action button on the right
