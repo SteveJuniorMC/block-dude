@@ -26,7 +26,6 @@ enum class LevelStatus {
 @Composable
 fun LevelCard(
     levelNumber: Int,
-    levelName: String,
     status: LevelStatus,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -74,17 +73,6 @@ fun LevelCard(
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
-
-            if (status != LevelStatus.LOCKED) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = levelName,
-                    color = textColor.copy(alpha = 0.7f),
-                    fontSize = 10.sp,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1
-                )
-            }
 
             if (status == LevelStatus.COMPLETED) {
                 Spacer(modifier = Modifier.height(2.dp))

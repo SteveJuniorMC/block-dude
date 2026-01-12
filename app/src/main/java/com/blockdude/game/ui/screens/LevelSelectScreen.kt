@@ -99,7 +99,6 @@ fun LevelSelectScreen(
 
                 LevelCard(
                     levelNumber = level.id,
-                    levelName = level.name,
                     status = status,
                     onClick = { onLevelClick(level.id) }
                 )
