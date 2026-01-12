@@ -300,9 +300,10 @@ fun DPad(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
+                    val inputSize = size
                     detectTapGestures(
                         onPress = { offset ->
-                            val direction = getDPadDirection(offset, this.size.width.toFloat(), this.size.height.toFloat())
+                            val direction = getDPadDirection(offset, inputSize.width.toFloat(), inputSize.height.toFloat())
                             pressedDirection = direction
                             when (direction) {
                                 DPadDirection.UP -> onUp()
