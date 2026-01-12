@@ -10,7 +10,7 @@ val AccentOrange = Color(0xFFE94560)
 val TextWhite = Color(0xFFEAEAEA)
 
 // Game colors
-val WallColor = Color(0xFF4A4A4A)
+val WallColor = Color(0xFF626262)
 val BlockColor = Color(0xFFD4A574)
 val BlockDark = Color(0xFFB8956A)
 val PlayerColor = Color(0xFF4ECDC4)
