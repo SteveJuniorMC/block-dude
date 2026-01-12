@@ -348,61 +348,50 @@ class LevelEditor {
         // Check collision with wall
         if (this.grid[newY][newX] === 'wall') return;
 
-        // Check collision with block
-        if (this.blocks.has(`${newX},${newY}`)) {
-            // Try to push the block
-            const pushX = newX + dx;
-            if (this.canPushBlock(newX, newY, dx)) {
-                this.blocks.delete(`${newX},${newY}`);
-                this.blocks.add(`${pushX},${newY}`);
-                this.applyBlockGravity(pushX, newY);
-            } else {
-                return;
-            }
+        // Check collision with block (can't push blocks in Block Dude)
+        if (this.blocks.has(`${newX},${newY}`)) return;
+
+        // If holding a block, check if there's space above target position
+        if (this.holdingBlock) {
+            const aboveNewY = newY - 1;
+            if (this.grid[aboveNewY]?.[newX] === 'wall') return;
+            if (this.blocks.has(`${newX},${aboveNewY}`)) return;
         }
 
-        // Check if there's ground at new position
-        const groundY = newY + 1;
-        const hasGround = this.grid[groundY]?.[newX] === 'wall' || this.blocks.has(`${newX},${groundY}`);
-
-        if (hasGround) {
-            this.playerPos.x = newX;
-            this.moves++;
-        } else {
-            // Fall down
-            this.playerPos.x = newX;
-            this.applyPlayerGravity();
-            this.moves++;
-        }
+        // Move to new position and apply gravity
+        this.playerPos.x = newX;
+        this.applyPlayerGravity();
+        this.moves++;
     }
 
     climbUp() {
         const dx = this.playerFacing === 'left' ? -1 : 1;
         const frontX = this.playerPos.x + dx;
-        const aboveX = frontX;
-        const aboveY = this.playerPos.y - 1;
+        const climbX = frontX;
+        const climbY = this.playerPos.y - 1;
 
         // Check if there's something to climb
         const hasFrontObstacle = this.grid[this.playerPos.y][frontX] === 'wall' || this.blocks.has(`${frontX},${this.playerPos.y}`);
-
         if (!hasFrontObstacle) return;
 
-        // Check if space above obstacle is clear
-        if (this.grid[aboveY]?.[aboveX] === 'wall') return;
-        if (this.blocks.has(`${aboveX},${aboveY}`)) return;
+        // Check if climb position is clear
+        if (this.grid[climbY]?.[climbX] === 'wall') return;
+        if (this.blocks.has(`${climbX},${climbY}`)) return;
 
-        // Check if space above player is clear (for held block)
+        // If holding block, check extra space above
         if (this.holdingBlock) {
-            if (this.grid[this.playerPos.y - 1]?.[this.playerPos.x] === 'wall') return;
-            if (this.grid[aboveY - 1]?.[aboveX] === 'wall') return;
+            const aboveClimbY = climbY - 1;
+            const aboveCurrentY = this.playerPos.y - 1;
+            // Check above climb position
+            if (this.grid[aboveClimbY]?.[climbX] === 'wall') return;
+            if (this.blocks.has(`${climbX},${aboveClimbY}`)) return;
+            // Check above current position
+            if (this.grid[aboveCurrentY]?.[this.playerPos.x] === 'wall') return;
+            if (this.blocks.has(`${this.playerPos.x},${aboveCurrentY}`)) return;
         }
 
-        // Check space directly above player
-        if (this.grid[this.playerPos.y - 1]?.[this.playerPos.x] === 'wall') return;
-        if (this.blocks.has(`${this.playerPos.x},${this.playerPos.y - 1}`)) return;
-
-        this.playerPos.x = aboveX;
-        this.playerPos.y = aboveY;
+        this.playerPos.x = climbX;
+        this.playerPos.y = climbY;
         this.moves++;
     }
 
@@ -436,18 +425,29 @@ class LevelEditor {
 
     placeBlock() {
         const dx = this.playerFacing === 'left' ? -1 : 1;
-        const placeX = this.playerPos.x + dx;
-        const placeY = this.playerPos.y;
+        const frontX = this.playerPos.x + dx;
+        const frontY = this.playerPos.y;
 
         // Check bounds
-        if (placeX < 0 || placeX >= this.width) return;
+        if (frontX < 0 || frontX >= this.width) return;
 
-        // Check if space is occupied
-        if (this.grid[placeY][placeX] === 'wall') return;
-        if (this.blocks.has(`${placeX},${placeY}`)) return;
+        // If front position is blocked, try to place above it (on top of obstacle)
+        if (this.grid[frontY][frontX] === 'wall' || this.blocks.has(`${frontX},${frontY}`)) {
+            const aboveY = frontY - 1;
+            // Check if space above obstacle is clear
+            if (aboveY < 0) return;
+            if (this.grid[aboveY]?.[frontX] === 'wall') return;
+            if (this.blocks.has(`${frontX},${aboveY}`)) return;
 
-        this.blocks.add(`${placeX},${placeY}`);
-        this.applyBlockGravity(placeX, placeY);
+            this.blocks.add(`${frontX},${aboveY}`);
+            this.holdingBlock = false;
+            this.moves++;
+            return;
+        }
+
+        // Place in front and apply gravity
+        this.blocks.add(`${frontX},${frontY}`);
+        this.applyBlockGravity(frontX, frontY);
         this.holdingBlock = false;
         this.moves++;
     }
