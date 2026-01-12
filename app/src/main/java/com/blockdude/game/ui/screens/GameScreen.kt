@@ -2,19 +2,25 @@ package com.blockdude.game.ui.screens
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.blockdude.game.data.GameState
 import com.blockdude.game.data.Level
 import com.blockdude.game.game.GameEngine
-import com.blockdude.game.ui.components.*
+import com.blockdude.game.ui.components.GameCanvas
+import com.blockdude.game.ui.components.GameControls
+import com.blockdude.game.ui.components.GameHUD
 import com.blockdude.game.ui.theme.*
 
 @Composable
@@ -34,7 +40,7 @@ fun GameScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(GroundColor)
+            .background(DarkBackground)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -69,7 +75,7 @@ fun GameScreen(
                 onMoveRight = onMoveRight,
                 onMoveUp = onMoveUp,
                 onAction = onAction,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 32.dp)
             )
         }
 
@@ -101,93 +107,88 @@ private fun LevelCompleteOverlay(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.85f)),
+            .background(Color.Black.copy(alpha = 0.8f)),
         contentAlignment = Alignment.Center
     ) {
-        // Brick background panel with pixel frame
-        BrickBackground(
-            brickColor = WallColor,
-            mortarColor = UIMortarColor
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(SurfaceColor)
+                .padding(32.dp)
         ) {
-            PixelFrame(
-                borderColor = BlockColor,
-                backgroundColor = Color.Transparent,
-                borderWidth = 6.dp
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(32.dp)
-                ) {
-                    Text(
-                        text = "LEVEL",
-                        color = TextWhite,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "COMPLETE!",
-                        color = CompletedColor,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 4.sp
-                    )
+            Text(
+                text = "LEVEL",
+                color = TextWhite,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "COMPLETE!",
+                color = CompletedColor,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 4.sp
+            )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-                    // Moves in pixel frame
-                    PixelFrame(
-                        borderColor = WallColor,
-                        backgroundColor = GroundColor,
-                        borderWidth = 3.dp
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = "MOVES",
-                                color = TextWhite.copy(alpha = 0.7f),
-                                fontSize = 12.sp
-                            )
-                            Text(
-                                text = "$moves",
-                                color = AccentOrange,
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+            Text(
+                text = "Moves: $moves",
+                color = AccentOrange,
+                fontSize = 20.sp
+            )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-                    // Buttons
-                    if (hasNextLevel) {
-                        WoodButton(
-                            text = "NEXT LEVEL",
-                            onClick = onNextLevel,
-                            width = 180.dp,
-                            height = 48.dp
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-
-                    WoodButton(
-                        text = "RETRY",
-                        onClick = onRestart,
-                        width = 180.dp,
-                        height = 48.dp
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    WoodButton(
-                        text = "LEVELS",
-                        onClick = onBack,
-                        width = 180.dp,
-                        height = 48.dp
-                    )
-                }
+            // Buttons
+            if (hasNextLevel) {
+                OverlayButton(
+                    text = "NEXT LEVEL",
+                    color = CompletedColor,
+                    onClick = onNextLevel
+                )
+                Spacer(modifier = Modifier.height(12.dp))
             }
+
+            OverlayButton(
+                text = "RETRY",
+                color = AccentOrange,
+                onClick = onRestart
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OverlayButton(
+                text = "LEVELS",
+                color = PrimaryBlue,
+                onClick = onBack
+            )
         }
+    }
+}
+
+@Composable
+private fun OverlayButton(
+    text: String,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .width(180.dp)
+            .height(48.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(color)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
