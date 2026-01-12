@@ -111,7 +111,6 @@ private fun ControlButton(
 @Composable
 fun GameHUD(
     levelNumber: Int,
-    levelName: String,
     moves: Int,
     onRestart: () -> Unit,
     onBack: () -> Unit,
@@ -138,16 +137,10 @@ fun GameHUD(
         }
 
         // Level info
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Level $levelNumber",
-                color = Color.White
-            )
-            Text(
-                text = levelName,
-                color = Color.White.copy(alpha = 0.7f)
-            )
-        }
+        Text(
+            text = "Level $levelNumber",
+            color = Color.White
+        )
 
         // Moves counter
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

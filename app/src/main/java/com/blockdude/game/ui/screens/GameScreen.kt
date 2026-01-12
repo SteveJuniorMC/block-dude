@@ -48,7 +48,6 @@ fun GameScreen(
             // HUD
             GameHUD(
                 levelNumber = level.id,
-                levelName = level.name,
                 moves = gameState.moves,
                 onRestart = onRestart,
                 onBack = onBack
@@ -121,35 +120,35 @@ private fun LevelCompleteOverlay(
             Text(
                 text = "LEVEL",
                 color = TextWhite,
-                fontSize = 24.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = "COMPLETE!",
                 color = CompletedColor,
-                fontSize = 32.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 4.sp
+                letterSpacing = 2.sp
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "Moves: $moves",
                 color = AccentOrange,
-                fontSize = 20.sp
+                fontSize = 12.sp
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Buttons
             if (hasNextLevel) {
                 OverlayButton(
-                    text = "NEXT LEVEL",
+                    text = "NEXT",
                     color = CompletedColor,
                     onClick = onNextLevel
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             OverlayButton(
@@ -158,7 +157,7 @@ private fun LevelCompleteOverlay(
                 onClick = onRestart
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             OverlayButton(
                 text = "LEVELS",
@@ -177,8 +176,8 @@ private fun OverlayButton(
 ) {
     Box(
         modifier = Modifier
-            .width(180.dp)
-            .height(48.dp)
+            .width(140.dp)
+            .height(40.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(color)
             .clickable(onClick = onClick),
@@ -187,7 +186,7 @@ private fun OverlayButton(
         Text(
             text = text,
             color = Color.White,
-            fontSize = 16.sp,
+            fontSize = 10.sp,
             fontWeight = FontWeight.Bold
         )
     }
