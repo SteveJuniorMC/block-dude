@@ -123,10 +123,34 @@ object LevelRepository {
             """
         ),
 
-        // Level 6
+        // Level 6 (was level 8 - easier)
         Level.fromString(
             id = 6,
             name = "Level 6",
+            levelString = """
+                ################
+                #              #
+                #         #B   #
+                #       ###### #
+                #      ####### #
+                #     #      # #
+                #    #       # #
+                #B      P    # #
+                ####    #    # #
+                #####   ## B # #
+                #   ##   ### #
+                #   ### B### # D
+                #   ########   #
+                #B  #          #
+                #BB          B #
+                ################
+            """
+        ),
+
+        // Level 7 (was level 6)
+        Level.fromString(
+            id = 7,
+            name = "Level 7",
             levelString = """
                 ################
 
@@ -147,10 +171,10 @@ object LevelRepository {
             """
         ),
 
-        // Level 7
+        // Level 8 (was level 7 - hardest)
         Level.fromString(
-            id = 7,
-            name = "Level 7",
+            id = 8,
+            name = "Level 8",
             levelString = """
                 ################
 
@@ -167,30 +191,6 @@ object LevelRepository {
                 B ###### #
                 ######## #  #
                 ######## #  #  D
-                ################
-            """
-        ),
-
-        // Level 8
-        Level.fromString(
-            id = 8,
-            name = "Level 8",
-            levelString = """
-                ################
-                #              #
-                #         #B   #
-                #       ###### #
-                #      ####### #
-                #     #      # #
-                #    #       # #
-                #B      P    # #
-                ####    #    # #
-                #####   ## B # #
-                #   ##   ### #
-                #   ### B### # D
-                #   ########   #
-                #B  #          #
-                #BB          B #
                 ################
             """
         )
