@@ -123,6 +123,7 @@ private fun LevelCompleteOverlay(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "COMPLETE!",
                 color = CompletedColor,
