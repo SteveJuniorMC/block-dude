@@ -86,12 +86,17 @@ fun MainMenuScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Move with < > buttons",
+                text = "◀ ▶  Move left/right",
                 color = TextWhite.copy(alpha = 0.6f),
                 fontSize = 12.sp
             )
             Text(
-                text = "Pick up and place blocks",
+                text = "▲  Climb up",
+                color = TextWhite.copy(alpha = 0.6f),
+                fontSize = 12.sp
+            )
+            Text(
+                text = "▼  Pick up / place block",
                 color = TextWhite.copy(alpha = 0.6f),
                 fontSize = 12.sp
             )
