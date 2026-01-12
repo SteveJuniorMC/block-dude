@@ -91,10 +91,10 @@ fun LevelSelectScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             items(levels) { level ->
+                // All levels unlocked for testing
                 val status = when {
                     completedLevels.contains(level.id) -> LevelStatus.COMPLETED
-                    level.id == 1 || completedLevels.contains(level.id - 1) -> LevelStatus.UNLOCKED
-                    else -> LevelStatus.LOCKED
+                    else -> LevelStatus.UNLOCKED
                 }
 
                 LevelCard(
