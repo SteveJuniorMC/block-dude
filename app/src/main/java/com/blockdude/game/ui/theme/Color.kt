@@ -23,3 +23,8 @@ val GroundColor = Color(0xFF2D2D44)
 val LockedColor = Color(0xFF666666)
 val UnlockedColor = Color(0xFFFFB347)
 val CompletedColor = Color(0xFF77DD77)
+
+// UI brick/frame colors (matching arena)
+val UIBrickColor = Color(0xFF4A4A4A)
+val UIMortarColor = Color(0xFF252525)
+val UIFrameColor = Color(0xFF3A3A3A)
