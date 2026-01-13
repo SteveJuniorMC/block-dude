@@ -41,7 +41,7 @@ fun GameControls(
         // D-Pad layout
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(72.dp)
         ) {
             // Up button
             ControlButton(
