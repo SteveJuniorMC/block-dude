@@ -18,6 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.blockdude.game.ui.components.ScaledContainer
+import com.blockdude.game.ui.components.scaledDp
+import com.blockdude.game.ui.components.scaledSp
 import com.blockdude.game.ui.theme.*
 
 @Composable
@@ -25,123 +28,126 @@ fun MainMenuScreen(
     onPlayClick: () -> Unit,
     onLevelSelectClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Title
-        Text(
-            text = "BLOCK",
-            color = PlayerColor,
-            fontSize = 56.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 8.sp
-        )
-        Text(
-            text = "DUDE",
-            color = AccentOrange,
-            fontSize = 56.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 8.sp
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Subtitle
-        Text(
-            text = "A Classic Puzzle Game",
-            color = TextWhite.copy(alpha = 0.6f),
-            fontSize = 14.sp
-        )
-
-        Spacer(modifier = Modifier.height(80.dp))
-
-        // Play button
-        MenuButton(
-            text = "PLAY",
-            color = AccentOrange,
-            onClick = onPlayClick
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Level Select button
-        MenuButton(
-            text = "LEVELS",
-            color = PrimaryBlue,
-            onClick = onLevelSelectClick
-        )
-
-        Spacer(modifier = Modifier.height(80.dp))
-
-        // Instructions
+    ScaledContainer(backgroundColor = DarkBackground) {
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(scaledDp(24)),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 24.dp)
+            verticalArrangement = Arrangement.Center
         ) {
+            // Title
             Text(
-                text = "HOW TO PLAY",
-                color = TextWhite,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
+                text = "BLOCK",
+                color = PlayerColor,
+                fontSize = scaledSp(42),
+                fontWeight = FontWeight.Bold,
+                letterSpacing = scaledSp(4)
             )
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Move left/right
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                MiniButton(color = PrimaryBlue) { MiniArrow(Direction.LEFT) }
-                MiniButton(color = PrimaryBlue) { MiniArrow(Direction.RIGHT) }
-                Text(
-                    text = "Move",
-                    color = TextWhite.copy(alpha = 0.7f),
-                    fontSize = 10.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Climb up
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                MiniButton(color = PrimaryBlue) { MiniArrow(Direction.UP) }
-                Text(
-                    text = "Climb",
-                    color = TextWhite.copy(alpha = 0.7f),
-                    fontSize = 10.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Pick up / place
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                MiniButton(color = AccentOrange) { MiniActionIcon() }
-                Text(
-                    text = "Pick up / Place",
-                    color = TextWhite.copy(alpha = 0.7f),
-                    fontSize = 10.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
             Text(
-                text = "Reach the door!",
-                color = DoorColor,
-                fontSize = 10.sp
+                text = "DUDE",
+                color = AccentOrange,
+                fontSize = scaledSp(42),
+                fontWeight = FontWeight.Bold,
+                letterSpacing = scaledSp(4)
             )
+
+            Spacer(modifier = Modifier.height(scaledDp(12)))
+
+            // Subtitle
+            Text(
+                text = "A Classic Puzzle Game",
+                color = TextWhite.copy(alpha = 0.6f),
+                fontSize = scaledSp(10)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Play button
+            MenuButton(
+                text = "PLAY",
+                color = AccentOrange,
+                onClick = onPlayClick
+            )
+
+            Spacer(modifier = Modifier.height(scaledDp(12)))
+
+            // Level Select button
+            MenuButton(
+                text = "LEVELS",
+                color = PrimaryBlue,
+                onClick = onLevelSelectClick
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Instructions
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(horizontal = scaledDp(16))
+            ) {
+                Text(
+                    text = "HOW TO PLAY",
+                    color = TextWhite,
+                    fontSize = scaledSp(10),
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(scaledDp(10)))
+
+                // Move left/right
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(scaledDp(6))
+                ) {
+                    MiniButton(color = PrimaryBlue) { MiniArrow(Direction.LEFT) }
+                    MiniButton(color = PrimaryBlue) { MiniArrow(Direction.RIGHT) }
+                    Text(
+                        text = "Move",
+                        color = TextWhite.copy(alpha = 0.7f),
+                        fontSize = scaledSp(8)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(scaledDp(6)))
+
+                // Climb up
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(scaledDp(6))
+                ) {
+                    MiniButton(color = PrimaryBlue) { MiniArrow(Direction.UP) }
+                    Text(
+                        text = "Climb",
+                        color = TextWhite.copy(alpha = 0.7f),
+                        fontSize = scaledSp(8)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(scaledDp(6)))
+
+                // Pick up / place
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(scaledDp(6))
+                ) {
+                    MiniButton(color = AccentOrange) { MiniActionIcon() }
+                    Text(
+                        text = "Pick up / Place",
+                        color = TextWhite.copy(alpha = 0.7f),
+                        fontSize = scaledSp(8)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(scaledDp(10)))
+
+                Text(
+                    text = "Reach the door!",
+                    color = DoorColor,
+                    fontSize = scaledSp(8)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(scaledDp(16)))
         }
     }
 }
@@ -154,9 +160,9 @@ private fun MenuButton(
 ) {
     Box(
         modifier = Modifier
-            .width(200.dp)
-            .height(56.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .width(scaledDp(180))
+            .height(scaledDp(48))
+            .clip(RoundedCornerShape(scaledDp(10)))
             .background(color)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
@@ -164,9 +170,9 @@ private fun MenuButton(
         Text(
             text = text,
             color = Color.White,
-            fontSize = 20.sp,
+            fontSize = scaledSp(14),
             fontWeight = FontWeight.Bold,
-            letterSpacing = 2.sp
+            letterSpacing = scaledSp(2)
         )
     }
 }
@@ -176,9 +182,9 @@ private enum class Direction { UP, LEFT, RIGHT }
 @Composable
 private fun MiniButton(
     color: Color,
-    size: Dp = 28.dp,
     content: @Composable () -> Unit
 ) {
+    val size = scaledDp(24)
     val darkColor = Color(
         red = (color.red * 0.6f).coerceIn(0f, 1f),
         green = (color.green * 0.6f).coerceIn(0f, 1f),
@@ -190,7 +196,7 @@ private fun MiniButton(
         Box(
             modifier = Modifier
                 .size(size)
-                .offset(y = 2.dp)
+                .offset(y = scaledDp(2))
                 .clip(CircleShape)
                 .background(darkColor)
         )
@@ -209,7 +215,8 @@ private fun MiniButton(
 
 @Composable
 private fun MiniArrow(direction: Direction) {
-    Canvas(modifier = Modifier.size(14.dp)) {
+    val iconSize = scaledDp(12)
+    Canvas(modifier = Modifier.size(iconSize)) {
         val path = Path()
         val w = size.width
         val h = size.height
@@ -242,7 +249,8 @@ private fun MiniArrow(direction: Direction) {
 
 @Composable
 private fun MiniActionIcon() {
-    Canvas(modifier = Modifier.size(14.dp)) {
+    val iconSize = scaledDp(12)
+    Canvas(modifier = Modifier.size(iconSize)) {
         val w = size.width
         val h = size.height
         val padding = w * 0.2f

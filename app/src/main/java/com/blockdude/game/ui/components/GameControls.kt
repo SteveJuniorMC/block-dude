@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.unit.dp
 import com.blockdude.game.ui.theme.AccentOrange
 import com.blockdude.game.ui.theme.PrimaryBlue
 import com.blockdude.game.ui.theme.SurfaceColor
@@ -35,52 +34,55 @@ fun GameControls(
     onAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val buttonSize = 104.dp
-    val spacing = 12.dp
+    val buttonSize = scaledDp(80)
+    val buttonOffset = scaledDp(62)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(buttonSize + 80.dp * 2 + 16.dp)
-            .padding(16.dp),
+            .height(buttonSize + buttonOffset * 2 + scaledDp(12)),
         contentAlignment = Alignment.Center
     ) {
         // D-Pad cross layout - all buttons same distance apart
         // Up button
-        Box(modifier = Modifier.offset(y = -80.dp)) {
+        Box(modifier = Modifier.offset(y = -buttonOffset)) {
             ControlButton(
                 onClick = onMoveUp,
-                color = PrimaryBlue
+                color = PrimaryBlue,
+                size = buttonSize
             ) {
                 ArrowIcon(direction = ArrowDirection.UP)
             }
         }
 
         // Left button
-        Box(modifier = Modifier.offset(x = -80.dp)) {
+        Box(modifier = Modifier.offset(x = -buttonOffset)) {
             ControlButton(
                 onClick = onMoveLeft,
-                color = PrimaryBlue
+                color = PrimaryBlue,
+                size = buttonSize
             ) {
                 ArrowIcon(direction = ArrowDirection.LEFT)
             }
         }
 
         // Right button
-        Box(modifier = Modifier.offset(x = 80.dp)) {
+        Box(modifier = Modifier.offset(x = buttonOffset)) {
             ControlButton(
                 onClick = onMoveRight,
-                color = PrimaryBlue
+                color = PrimaryBlue,
+                size = buttonSize
             ) {
                 ArrowIcon(direction = ArrowDirection.RIGHT)
             }
         }
 
         // Action button (down)
-        Box(modifier = Modifier.offset(y = 80.dp)) {
+        Box(modifier = Modifier.offset(y = buttonOffset)) {
             ControlButton(
                 onClick = onAction,
-                color = AccentOrange
+                color = AccentOrange,
+                size = buttonSize
             ) {
                 ActionIcon()
             }
@@ -92,11 +94,12 @@ fun GameControls(
 private fun ControlButton(
     onClick: () -> Unit,
     color: Color,
-    size: androidx.compose.ui.unit.Dp = 104.dp,
+    size: androidx.compose.ui.unit.Dp,
     content: @Composable () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val shadowOffset = scaledDp(5)
 
     val darkColor = Color(
         red = (color.red * 0.6f).coerceIn(0f, 1f),
@@ -114,7 +117,7 @@ private fun ControlButton(
         modifier = Modifier
             .size(size)
             .graphicsLayer {
-                translationY = if (isPressed) 6f else 0f
+                translationY = if (isPressed) shadowOffset.value else 0f
             }
             .clickable(
                 interactionSource = interactionSource,
@@ -128,7 +131,7 @@ private fun ControlButton(
             Box(
                 modifier = Modifier
                     .size(size)
-                    .offset(y = 6.dp)
+                    .offset(y = shadowOffset)
                     .clip(CircleShape)
                     .background(darkColor)
             )
@@ -159,15 +162,15 @@ fun GameHUD(
         modifier = modifier
             .fillMaxWidth()
             .background(SurfaceColor)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = scaledDp(12), vertical = scaledDp(8)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Back button
         Box(
             modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .size(scaledDp(32))
+                .clip(RoundedCornerShape(scaledDp(6)))
                 .background(PrimaryBlue)
                 .clickable(onClick = onBack),
             contentAlignment = Alignment.Center
@@ -178,20 +181,21 @@ fun GameHUD(
         // Level info
         Text(
             text = "Level $levelNumber",
-            color = Color.White
+            color = Color.White,
+            fontSize = scaledSp(12)
         )
 
         // Moves counter
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Moves", color = Color.White.copy(alpha = 0.7f))
-            Text(text = "$moves", color = AccentOrange)
+            Text(text = "Moves", color = Color.White.copy(alpha = 0.7f), fontSize = scaledSp(8))
+            Text(text = "$moves", color = AccentOrange, fontSize = scaledSp(12))
         }
 
         // Restart button
         Box(
             modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .size(scaledDp(32))
+                .clip(RoundedCornerShape(scaledDp(6)))
                 .background(AccentOrange)
                 .clickable(onClick = onRestart),
             contentAlignment = Alignment.Center
@@ -206,8 +210,8 @@ private enum class ArrowDirection {
 }
 
 @Composable
-private fun ArrowIcon(direction: ArrowDirection, size: Int = 62) {
-    Canvas(modifier = Modifier.size(size.dp)) {
+private fun ArrowIcon(direction: ArrowDirection, iconSize: Int = 62) {
+    Canvas(modifier = Modifier.size(scaledDp(iconSize))) {
         val path = Path()
         val w = this.size.width
         val h = this.size.height
@@ -245,8 +249,8 @@ private fun ArrowIcon(direction: ArrowDirection, size: Int = 62) {
 }
 
 @Composable
-private fun ActionIcon(size: Int = 62) {
-    Canvas(modifier = Modifier.size(size.dp)) {
+private fun ActionIcon(iconSize: Int = 62) {
+    Canvas(modifier = Modifier.size(scaledDp(iconSize))) {
         val w = this.size.width
         val h = this.size.height
         val padding = w * 0.2f
@@ -281,8 +285,8 @@ private fun ActionIcon(size: Int = 62) {
 }
 
 @Composable
-private fun RestartIcon(size: Int = 20) {
-    Canvas(modifier = Modifier.size(size.dp)) {
+private fun RestartIcon(iconSize: Int = 20) {
+    Canvas(modifier = Modifier.size(scaledDp(iconSize))) {
         val w = this.size.width
         val h = this.size.height
         val strokeWidth = w * 0.15f
@@ -310,8 +314,8 @@ private fun RestartIcon(size: Int = 20) {
 }
 
 @Composable
-private fun BackIcon(size: Int = 20) {
-    Canvas(modifier = Modifier.size(size.dp)) {
+private fun BackIcon(iconSize: Int = 20) {
+    Canvas(modifier = Modifier.size(scaledDp(iconSize))) {
         val w = this.size.width
         val h = this.size.height
         val padding = w * 0.2f

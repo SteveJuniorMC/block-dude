@@ -51,9 +51,9 @@ fun LevelCard(
     Box(
         modifier = modifier
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(scaledDp(10)))
             .background(backgroundColor)
-            .border(2.dp, borderColor, RoundedCornerShape(12.dp))
+            .border(scaledDp(2), borderColor, RoundedCornerShape(scaledDp(10)))
             .then(
                 if (status != LevelStatus.LOCKED) {
                     Modifier.clickable(onClick = onClick)
@@ -70,16 +70,16 @@ fun LevelCard(
             Text(
                 text = if (status == LevelStatus.LOCKED) "?" else "$levelNumber",
                 color = textColor,
-                fontSize = 28.sp,
+                fontSize = scaledSp(20),
                 fontWeight = FontWeight.Bold
             )
 
             if (status == LevelStatus.COMPLETED) {
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(scaledDp(2)))
                 Text(
                     text = "DONE",
                     color = CompletedColor,
-                    fontSize = 8.sp,
+                    fontSize = scaledSp(6),
                     fontWeight = FontWeight.Bold
                 )
             }

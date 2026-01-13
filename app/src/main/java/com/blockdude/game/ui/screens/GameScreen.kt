@@ -21,6 +21,9 @@ import com.blockdude.game.game.GameEngine
 import com.blockdude.game.ui.components.GameCanvas
 import com.blockdude.game.ui.components.GameControls
 import com.blockdude.game.ui.components.GameHUD
+import com.blockdude.game.ui.components.ScaledContainer
+import com.blockdude.game.ui.components.scaledDp
+import com.blockdude.game.ui.components.scaledSp
 import com.blockdude.game.ui.theme.*
 
 @Composable
@@ -37,60 +40,58 @@ fun GameScreen(
     onNextLevel: () -> Unit,
     hasNextLevel: Boolean
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // HUD
-            GameHUD(
-                levelNumber = level.id,
-                moves = gameState.moves,
-                onRestart = onRestart,
-                onBack = onBack
-            )
-
-            // Game area
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                contentAlignment = Alignment.TopCenter
+    ScaledContainer(backgroundColor = DarkBackground) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                GameCanvas(
-                    level = level,
-                    gameState = gameState,
-                    gameEngine = gameEngine
+                // HUD
+                GameHUD(
+                    levelNumber = level.id,
+                    moves = gameState.moves,
+                    onRestart = onRestart,
+                    onBack = onBack
+                )
+
+                // Game area
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(scaledDp(12)),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    GameCanvas(
+                        level = level,
+                        gameState = gameState,
+                        gameEngine = gameEngine
+                    )
+                }
+
+                // Controls
+                GameControls(
+                    onMoveLeft = onMoveLeft,
+                    onMoveRight = onMoveRight,
+                    onMoveUp = onMoveUp,
+                    onAction = onAction,
+                    modifier = Modifier.padding(bottom = scaledDp(16))
                 )
             }
 
-            // Controls
-            GameControls(
-                onMoveLeft = onMoveLeft,
-                onMoveRight = onMoveRight,
-                onMoveUp = onMoveUp,
-                onAction = onAction,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-        }
-
-        // Level complete overlay
-        AnimatedVisibility(
-            visible = gameState.levelCompleted,
-            enter = fadeIn() + scaleIn(),
-            exit = fadeOut() + scaleOut()
-        ) {
-            LevelCompleteOverlay(
-                moves = gameState.moves,
-                onRestart = onRestart,
-                onNextLevel = onNextLevel,
-                onBack = onBack,
-                hasNextLevel = hasNextLevel
-            )
+            // Level complete overlay
+            AnimatedVisibility(
+                visible = gameState.levelCompleted,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                LevelCompleteOverlay(
+                    moves = gameState.moves,
+                    onRestart = onRestart,
+                    onNextLevel = onNextLevel,
+                    onBack = onBack,
+                    hasNextLevel = hasNextLevel
+                )
+            }
         }
     }
 }
@@ -112,35 +113,35 @@ private fun LevelCompleteOverlay(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(32.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .padding(scaledDp(24))
+                .clip(RoundedCornerShape(scaledDp(12)))
                 .background(SurfaceColor)
-                .padding(32.dp)
+                .padding(scaledDp(24))
         ) {
             Text(
                 text = "LEVEL",
                 color = TextWhite,
-                fontSize = 14.sp,
+                fontSize = scaledSp(12),
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(scaledDp(6)))
             Text(
                 text = "COMPLETE!",
                 color = CompletedColor,
-                fontSize = 18.sp,
+                fontSize = scaledSp(16),
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp
+                letterSpacing = scaledSp(2)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(scaledDp(12)))
 
             Text(
                 text = "Moves: $moves",
                 color = AccentOrange,
-                fontSize = 12.sp
+                fontSize = scaledSp(10)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(scaledDp(18)))
 
             // Buttons
             if (hasNextLevel) {
@@ -149,7 +150,7 @@ private fun LevelCompleteOverlay(
                     color = CompletedColor,
                     onClick = onNextLevel
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(scaledDp(6)))
             }
 
             OverlayButton(
@@ -158,7 +159,7 @@ private fun LevelCompleteOverlay(
                 onClick = onRestart
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(scaledDp(6)))
 
             OverlayButton(
                 text = "LEVELS",
@@ -177,9 +178,9 @@ private fun OverlayButton(
 ) {
     Box(
         modifier = Modifier
-            .width(140.dp)
-            .height(40.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .width(scaledDp(120))
+            .height(scaledDp(36))
+            .clip(RoundedCornerShape(scaledDp(6)))
             .background(color)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
@@ -187,7 +188,7 @@ private fun OverlayButton(
         Text(
             text = text,
             color = Color.White,
-            fontSize = 10.sp,
+            fontSize = scaledSp(9),
             fontWeight = FontWeight.Bold
         )
     }

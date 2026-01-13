@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.sp
 import com.blockdude.game.data.Level
 import com.blockdude.game.ui.components.LevelCard
 import com.blockdude.game.ui.components.LevelStatus
+import com.blockdude.game.ui.components.ScaledContainer
+import com.blockdude.game.ui.components.scaledDp
+import com.blockdude.game.ui.components.scaledSp
 import com.blockdude.game.ui.theme.*
 
 @Composable
@@ -28,80 +31,79 @@ fun LevelSelectScreen(
     onLevelClick: (Int) -> Unit,
     onBackClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-    ) {
-        // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(SurfaceColor)
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(PrimaryBlue)
-                    .clickable(onClick = onBackClick),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "<", color = Color.White, fontSize = 18.sp)
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Text(
-                text = "SELECT LEVEL",
-                color = TextWhite,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp
-            )
-        }
-
-        // Progress info
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Completed: ${completedLevels.size}/${levels.size}",
-                color = CompletedColor,
-                fontSize = 14.sp
-            )
-            Text(
-                text = "Tap to play",
-                color = TextWhite.copy(alpha = 0.5f),
-                fontSize = 14.sp
-            )
-        }
-
-        // Level grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+    ScaledContainer(backgroundColor = DarkBackground) {
+        Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            items(levels) { level ->
-                // All levels unlocked for testing
-                val status = when {
-                    completedLevels.contains(level.id) -> LevelStatus.COMPLETED
-                    else -> LevelStatus.UNLOCKED
+            // Header
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(SurfaceColor)
+                    .padding(scaledDp(12)),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(scaledDp(32))
+                        .clip(RoundedCornerShape(scaledDp(6)))
+                        .background(PrimaryBlue)
+                        .clickable(onClick = onBackClick),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "<", color = Color.White, fontSize = scaledSp(14))
                 }
 
-                LevelCard(
-                    levelNumber = level.id,
-                    status = status,
-                    onClick = { onLevelClick(level.id) }
+                Spacer(modifier = Modifier.width(scaledDp(12)))
+
+                Text(
+                    text = "SELECT LEVEL",
+                    color = TextWhite,
+                    fontSize = scaledSp(16),
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = scaledSp(1)
                 )
+            }
+
+            // Progress info
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = scaledDp(12), vertical = scaledDp(8)),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Completed: ${completedLevels.size}/${levels.size}",
+                    color = CompletedColor,
+                    fontSize = scaledSp(10)
+                )
+                Text(
+                    text = "Tap to play",
+                    color = TextWhite.copy(alpha = 0.5f),
+                    fontSize = scaledSp(10)
+                )
+            }
+
+            // Level grid
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(scaledDp(12)),
+                horizontalArrangement = Arrangement.spacedBy(scaledDp(10)),
+                verticalArrangement = Arrangement.spacedBy(scaledDp(10)),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(levels) { level ->
+                    val status = when {
+                        completedLevels.contains(level.id) -> LevelStatus.COMPLETED
+                        else -> LevelStatus.UNLOCKED
+                    }
+
+                    LevelCard(
+                        levelNumber = level.id,
+                        status = status,
+                        onClick = { onLevelClick(level.id) }
+                    )
+                }
             }
         }
     }
