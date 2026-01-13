@@ -59,7 +59,7 @@ fun GameScreen(
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(16.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.TopCenter
             ) {
                 GameCanvas(
                     level = level,

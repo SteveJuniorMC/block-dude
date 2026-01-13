@@ -36,11 +36,12 @@ fun GameControls(
     modifier: Modifier = Modifier
 ) {
     val buttonSize = 104.dp
-    val spacing = 4.dp
+    val spacing = 12.dp
 
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .height(buttonSize * 2 + spacing + 32.dp)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
