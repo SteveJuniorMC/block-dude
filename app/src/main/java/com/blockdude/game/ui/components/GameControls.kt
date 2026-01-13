@@ -41,13 +41,13 @@ fun GameControls(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(buttonSize * 3 + 16.dp)
+            .height(buttonSize + 80.dp * 2 + 16.dp)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         // D-Pad cross layout - all buttons same distance apart
         // Up button
-        Box(modifier = Modifier.offset(y = -buttonSize)) {
+        Box(modifier = Modifier.offset(y = -80.dp)) {
             ControlButton(
                 onClick = onMoveUp,
                 color = PrimaryBlue
@@ -57,7 +57,7 @@ fun GameControls(
         }
 
         // Left button
-        Box(modifier = Modifier.offset(x = -buttonSize)) {
+        Box(modifier = Modifier.offset(x = -80.dp)) {
             ControlButton(
                 onClick = onMoveLeft,
                 color = PrimaryBlue
@@ -67,7 +67,7 @@ fun GameControls(
         }
 
         // Right button
-        Box(modifier = Modifier.offset(x = buttonSize)) {
+        Box(modifier = Modifier.offset(x = 80.dp)) {
             ControlButton(
                 onClick = onMoveRight,
                 color = PrimaryBlue
@@ -77,7 +77,7 @@ fun GameControls(
         }
 
         // Action button (down)
-        Box(modifier = Modifier.offset(y = buttonSize)) {
+        Box(modifier = Modifier.offset(y = 80.dp)) {
             ControlButton(
                 onClick = onAction,
                 color = AccentOrange
