@@ -186,8 +186,9 @@ fun GameHUD(
         )
 
         // Moves counter
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Moves", color = Color.White.copy(alpha = 0.7f), fontSize = scaledSp(8))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = "Moves:", color = Color.White.copy(alpha = 0.7f), fontSize = scaledSp(10))
+            Spacer(modifier = Modifier.width(scaledDp(4)))
             Text(text = "$moves", color = AccentOrange, fontSize = scaledSp(12))
         }
 
