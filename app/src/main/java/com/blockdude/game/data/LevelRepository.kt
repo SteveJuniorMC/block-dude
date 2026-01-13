@@ -209,8 +209,8 @@ object LevelRepository {
                  #      ##
                  #       ##
                            #   B
-                 #           BBB
-                 #BB  #    BBBBB
+                 #    #      BBB
+                 #BB ##    BBBBB
                 ####### ########
                 ####### ########
                 ####### ########
