@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -15,8 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.unit.dp
@@ -92,11 +95,24 @@ private fun ControlButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
+    val darkColor = Color(
+        red = (color.red * 0.6f).coerceIn(0f, 1f),
+        green = (color.green * 0.6f).coerceIn(0f, 1f),
+        blue = (color.blue * 0.6f).coerceIn(0f, 1f)
+    )
+
+    val pressedColor = Color(
+        red = (color.red * 0.4f).coerceIn(0f, 1f),
+        green = (color.green * 0.4f).coerceIn(0f, 1f),
+        blue = (color.blue * 0.4f).coerceIn(0f, 1f)
+    )
+
     Box(
         modifier = Modifier
             .size(size)
-            .clip(CircleShape)
-            .background(if (isPressed) color.copy(alpha = 0.7f) else color)
+            .graphicsLayer {
+                translationY = if (isPressed) 6f else 0f
+            }
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -104,7 +120,27 @@ private fun ControlButton(
             ),
         contentAlignment = Alignment.Center
     ) {
-        content()
+        // Shadow/3D base (bottom layer)
+        if (!isPressed) {
+            Box(
+                modifier = Modifier
+                    .size(size)
+                    .offset(y = 6.dp)
+                    .clip(CircleShape)
+                    .background(darkColor)
+            )
+        }
+
+        // Main button face
+        Box(
+            modifier = Modifier
+                .size(size)
+                .clip(CircleShape)
+                .background(if (isPressed) pressedColor else color),
+            contentAlignment = Alignment.Center
+        ) {
+            content()
+        }
     }
 }
 
