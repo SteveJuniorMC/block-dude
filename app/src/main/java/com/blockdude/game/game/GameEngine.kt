@@ -142,20 +142,12 @@ class GameEngine(private val level: Level) {
         // Find where the block would land
         var placePos = frontPos
 
-        // If front position is blocked, try above player
+        // If front position is blocked, try placing on top of it
         if (isWall(frontPos) || isBlock(frontPos, state.blocks)) {
-            val abovePlayer = Position(state.playerPosition.x, state.playerPosition.y - 1)
-            val aboveAbove = Position(state.playerPosition.x, state.playerPosition.y - 2)
-            if (!isWall(abovePlayer) && !isBlock(abovePlayer, state.blocks) &&
-                !isWall(aboveAbove) && !isBlock(aboveAbove, state.blocks)
-            ) {
-                // Can't really place on head in classic block dude, but let's try front-above
-                val frontAbove = Position(frontPos.x, frontPos.y - 1)
-                if (!isWall(frontAbove) && !isBlock(frontAbove, state.blocks)) {
-                    placePos = frontAbove
-                } else {
-                    return state
-                }
+            val frontAbove = Position(frontPos.x, frontPos.y - 1)
+            // Only need the placement spot to be clear
+            if (!isWall(frontAbove) && !isBlock(frontAbove, state.blocks)) {
+                placePos = frontAbove
             } else {
                 return state
             }
