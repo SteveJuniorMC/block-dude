@@ -36,6 +36,8 @@ fun MainMenuScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Spacer(modifier = Modifier.weight(0.3f))
+
             // Title
             Text(
                 text = "BLOCK",
