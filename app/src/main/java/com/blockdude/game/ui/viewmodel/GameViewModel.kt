@@ -60,7 +60,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val engine = gameEngine ?: return
         val newState = engine.moveLeft(state)
         if (newState != state) {
-            soundManager.playMove()
+            soundManager.playMoveHorizontal()
             _gameState.value = newState
             checkLevelComplete(newState)
         }
@@ -71,7 +71,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val engine = gameEngine ?: return
         val newState = engine.moveRight(state)
         if (newState != state) {
-            soundManager.playMove()
+            soundManager.playMoveHorizontal()
             _gameState.value = newState
             checkLevelComplete(newState)
         }
@@ -82,7 +82,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val engine = gameEngine ?: return
         val newState = engine.moveUp(state)
         if (newState != state) {
-            soundManager.playMove()
+            soundManager.playMoveUp()
             _gameState.value = newState
             checkLevelComplete(newState)
         }
