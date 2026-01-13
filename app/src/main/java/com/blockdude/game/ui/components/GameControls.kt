@@ -35,46 +35,48 @@ fun GameControls(
     onAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val buttonSize = 104.dp
+    val spacing = 4.dp
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        // D-Pad layout
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            // Up button
+        // D-Pad cross layout - all buttons same distance apart
+        // Up button
+        Box(modifier = Modifier.offset(y = -(buttonSize + spacing) / 2)) {
             ControlButton(
                 onClick = onMoveUp,
                 color = PrimaryBlue
             ) {
                 ArrowIcon(direction = ArrowDirection.UP)
             }
+        }
 
-            // Left and Right buttons
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(72.dp),
-                verticalAlignment = Alignment.CenterVertically
+        // Left button
+        Box(modifier = Modifier.offset(x = -(buttonSize + spacing) / 2)) {
+            ControlButton(
+                onClick = onMoveLeft,
+                color = PrimaryBlue
             ) {
-                ControlButton(
-                    onClick = onMoveLeft,
-                    color = PrimaryBlue
-                ) {
-                    ArrowIcon(direction = ArrowDirection.LEFT)
-                }
-
-                ControlButton(
-                    onClick = onMoveRight,
-                    color = PrimaryBlue
-                ) {
-                    ArrowIcon(direction = ArrowDirection.RIGHT)
-                }
+                ArrowIcon(direction = ArrowDirection.LEFT)
             }
+        }
 
-            // Down button (action - pick up / place)
+        // Right button
+        Box(modifier = Modifier.offset(x = (buttonSize + spacing) / 2)) {
+            ControlButton(
+                onClick = onMoveRight,
+                color = PrimaryBlue
+            ) {
+                ArrowIcon(direction = ArrowDirection.RIGHT)
+            }
+        }
+
+        // Action button (down)
+        Box(modifier = Modifier.offset(y = (buttonSize + spacing) / 2)) {
             ControlButton(
                 onClick = onAction,
                 color = AccentOrange
