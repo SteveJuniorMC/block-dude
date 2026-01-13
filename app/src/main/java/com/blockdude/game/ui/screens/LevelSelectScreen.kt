@@ -95,7 +95,8 @@ fun LevelSelectScreen(
                 items(levels) { level ->
                     val status = when {
                         completedLevels.contains(level.id) -> LevelStatus.COMPLETED
-                        else -> LevelStatus.UNLOCKED
+                        level.id == 1 || completedLevels.contains(level.id - 1) -> LevelStatus.UNLOCKED
+                        else -> LevelStatus.LOCKED
                     }
 
                     LevelCard(
