@@ -1,6 +1,7 @@
 package com.blockdude.game.ui.screens
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,8 +43,53 @@ fun GameScreen(
     onNextLevel: () -> Unit,
     hasNextLevel: Boolean
 ) {
-    ScaledContainer(backgroundColor = DarkBackground) {
+    ScaledContainer(backgroundColor = WallColor) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // Full-screen brick background
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val tileSize = size.width / 12f
+                val tilesX = (size.width / tileSize).toInt() + 1
+                val tilesY = (size.height / tileSize).toInt() + 1
+                val mortarColor = Color(0xFF252525)
+                val mortarWidth = tileSize * 0.05f
+
+                for (ty in 0 until tilesY) {
+                    for (tx in 0 until tilesX) {
+                        val x = tx * tileSize
+                        val y = ty * tileSize
+
+                        // Main wall block
+                        drawRect(
+                            color = WallColor,
+                            topLeft = Offset(x, y),
+                            size = Size(tileSize, tileSize)
+                        )
+
+                        // Brick pattern
+                        val brickHeight = tileSize / 4
+                        val brickWidth = tileSize / 2
+
+                        // Horizontal mortar lines
+                        for (row in 0..4) {
+                            drawLine(
+                                color = mortarColor,
+                                start = Offset(x, y + row * brickHeight),
+                                end = Offset(x + tileSize, y + row * brickHeight),
+                                strokeWidth = mortarWidth
+                            )
+                        }
+
+                        // Vertical mortar lines (staggered)
+                        drawLine(mortarColor, Offset(x + brickWidth, y), Offset(x + brickWidth, y + brickHeight), mortarWidth)
+                        drawLine(mortarColor, Offset(x + brickWidth, y + 2 * brickHeight), Offset(x + brickWidth, y + 3 * brickHeight), mortarWidth)
+                        drawLine(mortarColor, Offset(x, y + brickHeight), Offset(x, y + 2 * brickHeight), mortarWidth)
+                        drawLine(mortarColor, Offset(x + tileSize, y + brickHeight), Offset(x + tileSize, y + 2 * brickHeight), mortarWidth)
+                        drawLine(mortarColor, Offset(x, y + 3 * brickHeight), Offset(x, y + tileSize), mortarWidth)
+                        drawLine(mortarColor, Offset(x + tileSize, y + 3 * brickHeight), Offset(x + tileSize, y + tileSize), mortarWidth)
+                    }
+                }
+            }
+
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
