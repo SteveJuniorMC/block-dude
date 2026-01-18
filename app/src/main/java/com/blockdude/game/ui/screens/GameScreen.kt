@@ -1,7 +1,6 @@
 package com.blockdude.game.ui.screens
 
 import androidx.compose.animation.*
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,7 +22,6 @@ import com.blockdude.game.ui.components.GameCanvas
 import com.blockdude.game.ui.components.GameControls
 import com.blockdude.game.ui.components.GameHUD
 import com.blockdude.game.ui.components.ScaledContainer
-import com.blockdude.game.ui.components.drawWall
 import com.blockdude.game.ui.components.scaledDp
 import com.blockdude.game.ui.components.scaledSp
 import com.blockdude.game.ui.theme.*
@@ -42,21 +40,8 @@ fun GameScreen(
     onNextLevel: () -> Unit,
     hasNextLevel: Boolean
 ) {
-    ScaledContainer(backgroundColor = WallColor) {
+    ScaledContainer(backgroundColor = DarkBackground) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Full-screen brick background, sized to match level grid
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val tileSize = size.width / level.width
-                val tilesX = level.width
-                val tilesY = (size.height / tileSize).toInt() + 1
-
-                for (ty in 0 until tilesY) {
-                    for (tx in 0 until tilesX) {
-                        drawWall(tx * tileSize, ty * tileSize, tileSize)
-                    }
-                }
-            }
-
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
