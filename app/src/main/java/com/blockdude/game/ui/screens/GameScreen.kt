@@ -44,10 +44,10 @@ fun GameScreen(
 ) {
     ScaledContainer(backgroundColor = WallColor) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Full-screen brick background
+            // Full-screen brick background, sized to match level grid
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val tileSize = size.width / 12f
-                val tilesX = (size.width / tileSize).toInt() + 1
+                val tileSize = size.width / level.width
+                val tilesX = level.width
                 val tilesY = (size.height / tileSize).toInt() + 1
 
                 for (ty in 0 until tilesY) {
