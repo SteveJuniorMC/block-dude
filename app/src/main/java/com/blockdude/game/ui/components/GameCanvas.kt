@@ -110,7 +110,7 @@ fun GameCanvas(
     }
 }
 
-private fun DrawScope.drawWall(x: Float, y: Float, size: Float) {
+internal fun DrawScope.drawWall(x: Float, y: Float, size: Float) {
     // Main wall block with base color
     drawRect(
         color = WallColor,
