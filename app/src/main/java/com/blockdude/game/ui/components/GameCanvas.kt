@@ -60,19 +60,7 @@ fun GameCanvas(
         val offsetX = (size.width - cellSize * level.width) / 2
         val offsetY = (size.height - cellSize * level.height) / 2
 
-        // Draw brick pattern across entire canvas, aligned with level grid
-        val tilesLeft = (offsetX / cellSize).toInt() + 1
-        val tilesTop = (offsetY / cellSize).toInt() + 1
-        val tilesRight = ((size.width - offsetX) / cellSize).toInt() + 1
-        val tilesBottom = ((size.height - offsetY) / cellSize).toInt() + 1
-
-        for (ty in -tilesTop until tilesBottom) {
-            for (tx in -tilesLeft until tilesRight) {
-                drawWall(offsetX + tx * cellSize, offsetY + ty * cellSize, cellSize)
-            }
-        }
-
-        // Draw playable area background on top
+        // Draw background
         drawRect(
             color = GroundColor,
             topLeft = Offset(offsetX, offsetY),
@@ -110,7 +98,7 @@ fun GameCanvas(
     }
 }
 
-internal fun DrawScope.drawWall(x: Float, y: Float, size: Float) {
+private fun DrawScope.drawWall(x: Float, y: Float, size: Float) {
     // Main wall block with base color
     drawRect(
         color = WallColor,
