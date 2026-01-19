@@ -114,24 +114,6 @@ class GameEngine(private val level: Level) {
             )
         }
 
-        // Try to pick up block below in front (if standing on edge)
-        val belowFront = Position(frontPos.x, frontPos.y + 1)
-        if (isBlock(belowFront, state.blocks) &&
-            !isBlock(frontPos, state.blocks) && !isWall(frontPos) &&
-            !isBlock(abovePlayer, state.blocks) && !isWall(abovePlayer)
-        ) {
-            val aboveBelowFront = frontPos
-            if (!isBlock(aboveBelowFront, state.blocks) && !isWall(aboveBelowFront)) {
-                val newBlocks = state.blocks.toMutableSet()
-                newBlocks.remove(belowFront)
-                return state.copy(
-                    holdingBlock = true,
-                    blocks = newBlocks,
-                    moves = state.moves + 1
-                )
-            }
-        }
-
         return state
     }
 
